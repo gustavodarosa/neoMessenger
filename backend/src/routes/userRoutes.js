@@ -27,4 +27,29 @@ router.post('/register', async (req, res) => {
   }
 });
 
+// Rota POST para login
+router.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Preencha todos os campos!' });
+  }
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ error: 'Usuário não encontrado!' });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ error: 'Senha incorreta!' });
+    }
+
+    res.status(200).json({ message: '✅ Login realizado com sucesso!' });
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao fazer login', details: err.message });
+  }
+});
+
 module.exports = router;
