@@ -1,13 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // Function to display error/success messages
+  // Função para exibir mensagens de erro/sucesso
   function showMessage(elementId, message, isError = true) {
     const messageElement = document.getElementById(elementId);
-    messageElement.textContent = message;
-    messageElement.style.display = 'block';
-    messageElement.style.color = isError ? 'red' : 'green';
+    if (messageElement) {
+      messageElement.textContent = message;
+      messageElement.style.display = 'block';
+      messageElement.style.color = isError ? 'red' : 'green';
+    }
   }
 
-  // Handle registration
+  // Handle de registro
   document.getElementById('register-form')?.addEventListener('submit', async (event) => {
     event.preventDefault();
 
@@ -35,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Handle login
+  // Handle de login
   document.getElementById('login-form')?.addEventListener('submit', async (event) => {
     event.preventDefault();
 
@@ -64,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Exemplo de como fazer uma requisição para uma rota protegida
+  // Função para fazer requisição para uma rota protegida
   async function fetchProtectedData() {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -93,6 +95,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Chamar a função para testar a rota protegida
-  fetchProtectedData();
+  // Chamar a função de rota protegida somente se estivermos na página principal (index.html)
+  if (window.location.pathname.endsWith('index.html')) {
+    fetchProtectedData();
+  }
 });

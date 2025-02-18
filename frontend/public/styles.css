@@ -1,63 +1,234 @@
+/* Variáveis de cor e tema */
 :root {
-    --primary-color: #4CAF50;
-    --secondary-color: #45a049;
-    --background-color: #f3f4f7;
-    --text-color: #333;
-  }
+  --primary-color: #00A2E8;         /* Azul vibrante */
+  --secondary-color: #0078C8;       /* Azul para hover */
+  --background-color: #CFE8F5;      /* Fundo com um toque mais azul */
+  --text-color: #000000;            /* Texto em preto */
+  --input-border-color: #6d6d6d73;    /* Borda das caixas em um tom de azul mais escuro */
+  --status-color: rgba(0, 255, 0, 0.5); /* Verde para online */
+  --glow-color: rgba(0, 255, 13, 0.5);  /* Cor do glow verde */
+}
+
+/* Reset e configurações genéricas */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  overflow-x: hidden;
+  overflow-y: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+/* Estilos do body */
+body {
+  position: relative;
+  font-family: "Segoe UI Light", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 300;
+  background: linear-gradient(
+    to bottom,
+    #6cd0ff 0%,
+    #78cbf2 3%,  /* Tom de azul intermediário */
+    #e3f3fc 20%, /* Azul bem claro para transição */
+    #ffffff 30%  /* Branco ao final */
+  );
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  z-index: 0;
+}
+
+/* Conteúdo principal */
+.content {
+  position: relative;
+  z-index: 2; /* Garante que o conteúdo fique acima dos efeitos */
+}
+
+/* Estilos do formulário com efeito vidro fosco e gradiente em tons de azul */
+form {
+  width: 100%;
+  max-width: 500px;
+  padding: 40px;   
+  border-radius: 10px;  
+  overflow: hidden;
+  position: relative;
+}
+
+form::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: inherit;
+  filter: blur(30px);
+  z-index: -1;
+}
+
+/* Estilos para o avatar */
+.avatar-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.avatar-border {
+  display: inline-block;
+  padding: 10px;
   
-  body {
-    font-family: Arial, sans-serif;
-    background-color: var(--background-color);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-  }
   
-  .login-container {
-    background-color: #fff;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 400px;
-    margin: 20px;
+  border-radius: 10px;
+  position: relative;
+  box-shadow: 0 8px 16px rgba(0, 255, 21, 0.315); /* Brilho sutil ao redor, criando o efeito de reflexo */           
+  overflow: hidden; /* Garante que pseudo-elemento não ultrapasse */
+}
+
+/* Camada de vidro com degradê e brilho */
+.avatar-border::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to bottom, 
+    rgb(255, 255, 255), /* Começa mais translúcido no topo */
+    rgba(0, 255, 13, 0.788)  /* Fica mais sólido na parte inferior */
+  ),
+  radial-gradient(circle, rgba(255, 255, 255, 0.2) 10%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0) 80%); /* Brilho suave no centro */
+  backdrop-filter: blur(15px) saturate(120%);
+  -webkit-backdrop-filter: blur(15px) saturate(120%);
+  border-radius: 10px; /* Borda arredondada para um efeito mais suave */
+  z-index: 1;
+  opacity: 0.7; /* Aumenta a opacidade para dar um visual de vidro mais sólido */
+  border: 1px solid rgba(255, 255, 255, 0.5); /* Borda mais visível para definir melhor o efeito */
+  box-shadow: 0 8px 16px rgba(255, 255, 255, 0.25), /* Brilho sutil ao redor, criando o efeito de reflexo */
+              
+}
+
+.avatar {
+  display: block;
+  width: 150px; /* Tamanho do avatar */
+  height: auto;
+  border: 2px solid #e9e9e9; /* Segunda borda */
+  border-radius: 8px; /* Mesma radiusão do pseudo-elemento */
+  padding: 5px;
+  background: linear-gradient(to bottom, #ffffff, #e7e7e7); /* Gradiente de cinza com branco */
+  position: relative;
+  z-index: 2;  /* Fica acima da camada de vidro */
+}
+
+/* Estilos das entradas do formulário */
+.input-group {
+  margin-bottom: 10px; /* Reduz espaço entre os grupos */
+  width: 100%;
+}
+
+.input-group label {
+  display: block;
+  font-size: 16px;
+  margin-bottom: 2px;  /* Menor espaçamento entre label e input */
+  color: var(--text-color);
+  font-weight: 600;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  padding: 4px 6px;
+  border: 1px solid var(--input-border-color);
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: 300;
+  color: var(--text-color);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  background-color: #F0F8FF;
+}
+
+/* Botão do formulário */
+button {
+  width: 100%;
+  padding: 10px;
+  background: 
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.15)),
+    linear-gradient(to bottom, #7ad7ff, #0087e0);
+  background-blend-mode: overlay;
+  border: 1px solid rgba(255, 255, 255, 0.5); /* Borda translúcida */
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Sombra mais pronunciada */
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+  margin-top: 10px;
+  backdrop-filter: blur(5px); /* Desfoque mais pronunciado */
+  -webkit-backdrop-filter: blur(5px);
+  position: relative;
+  overflow: hidden;
+}
+
+button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.2));
+  opacity: 0.5;
+  z-index: 1;
+}
+
+button:hover {
+  background: 
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.25)),
+    linear-gradient(to bottom, #0078c8, #9ce1ff);
+  background-blend-mode: overlay;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5); /* Sombra mais pronunciada ao passar o mouse */
+}
+
+/* Estilo para mensagens */
+.message {
+  text-align: center;
+  font-size: 14px;
+  margin-top: 15px;
+  color: var(--text-color);
+  font-weight: 300;
+}
+
+@keyframes colorChange {
+  0% {
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.3),
+      rgba(255, 255, 255, 0.1)
+    ), var(--status-color-start);
   }
-  
-  .input-group {
-    margin-bottom: 15px;
+  50% {
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.3),
+      rgba(255, 255, 255, 0.1)
+    ), var(--status-color-end);
   }
-  
-  input {
-    width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    box-sizing: border-box;
-    font-size: 16px;
+  100% {
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.3),
+      rgba(255, 255, 255, 0.1)
+    ), var(--status-color-start);
   }
-  
-  button {
-    width: 100%;
-    padding: 10px;
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  button:hover {
-    background-color: var(--secondary-color);
-  }
-  
-  .message {
-    display: none;
-    margin-top: 15px;
-    font-size: 14px;
-    text-align: center;
-  }
+}
+

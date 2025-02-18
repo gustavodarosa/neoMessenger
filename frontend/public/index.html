@@ -1,22 +1,28 @@
 <!DOCTYPE html>
-<html lang="pt-br">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Neo Messenger</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  <div id="chat-container">
-    <header>
-      <h1>Neo Messenger</h1>
-    </header>
-    <div id="messages"></div>
-    <div id="input-area">
-      <input id="input-message" type="text" placeholder="Digite uma mensagem..." autocomplete="off">
-      <button id="send-btn">Enviar</button>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>neoMessenger</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- O efeito ficará aplicado no fundo por meio do pseudo-elemento ::after -->
+    <div class="content">
+      <!-- Conteúdo principal -->
+      <h1>Bem-vindo ao neoMessenger</h1>
+      <form>
+        <div class="input-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="Digite seu email" required />
+        </div>
+        <div class="input-group">
+          <label for="password">Senha</label>
+          <input type="password" id="password" placeholder="Digite sua senha" required />
+        </div>
+        <button type="submit">Entrar</button>
+      </form>
+      <div class="message">Mensagem de exemplo</div>
     </div>
-  </div>
-  <script src="script.js"></script>
-</body>
+  </body>
 </html>

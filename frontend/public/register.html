@@ -3,30 +3,48 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#00A2E8">
   <title>Registro - Neo Messenger</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="login-container">
-    <h2>Registro</h2>
-    <form id="register-form">
-      <div class="input-group">
-        <label for="username">Nome de Usuário</label>
-        <input type="text" id="username" name="username" placeholder="Digite seu nome de usuário" required>
+  <form id="register-form">
+    <div class="avatar-container">
+      <div class="avatar-border">
+        <div class="avatar-glass"></div>
+        <img src="/frontend/assets/avatar.png" alt="Avatar" class="avatar">
       </div>
-      <div class="input-group">
-        <label for="email">E-mail</label>
-        <input type="email" id="email" name="email" placeholder="Digite seu e-mail" required>
-      </div>
-      <div class="input-group">
-        <label for="password">Senha</label>
-        <input type="password" id="password" name="password" placeholder="Digite sua senha" required>
-      </div>
-      <button type="submit">Cadastrar</button>
-    </form>
-    <p>Já tem uma conta? <a href="login.html">Entrar</a></p>
-    <div id="error-message" class="message"></div>
-  </div>
-  <script src="script.js"></script>
+    </div>
+    <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 20px;">
+      Cadastre-se no neoMessenger<br>é rápido e fácil
+    </h2>
+    
+    <div class="input-group">
+      <label for="username">Nome de Usuário</label>
+      <input type="text" id="username" name="username" placeholder="Digite seu nome de usuário" required>
+    </div>
+    
+    <div class="input-group">
+      <label for="email">E-mail</label>
+      <input type="email" id="email" name="email" placeholder="Digite seu e-mail" required>
+    </div>
+    
+    <div class="input-group">
+      <label for="password">Senha</label>
+      <input type="password" id="password" name="password" placeholder="Digite sua senha" required>
+    </div>
+    
+    <div class="input-group">
+      <label for="confirm-password">Confirmar Senha</label>
+      <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirme sua senha" required>
+    </div>
+    
+    <button type="submit">Registrar</button>
+    <p class="message" id="error-message"></p>
+    
+    <p style="text-align: center; margin-top: 20px; font-size: 14px;">
+      Já tem uma conta? <a href="login.html" style="color: var(--primary-color); text-decoration: none;">Fazer login</a>
+    </p>
+  </form>
 </body>
 </html>
