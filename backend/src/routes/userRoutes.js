@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
+const auth = require('../middlewares/auth');
 
 // Rota POST para registro
 router.post('/register', async (req, res) => {
@@ -46,10 +48,17 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'Senha incorreta!' });
     }
 
-    res.status(200).json({ message: '✅ Login realizado com sucesso!' });
+    // Gerar um token JWT
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    res.status(200).json({ message: '✅ Login realizado com sucesso!', token });
   } catch (err) {
     res.status(500).json({ error: 'Erro ao fazer login', details: err.message });
   }
+});
+
+// Rota GET protegida para testar o middleware de autenticação
+router.get('/protected', auth, (req, res) => {
+  res.status(200).json({ message: 'Você acessou uma rota protegida!', user: req.user });
 });
 
 module.exports = router;
