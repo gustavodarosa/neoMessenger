@@ -61,4 +61,32 @@ router.get('/protected', auth, (req, res) => {
   res.status(200).json({ message: 'Você acessou uma rota protegida!', user: req.user });
 });
 
+// Exemplo de rota para obter contatos
+router.get('/contacts', auth, async (req, res) => {
+  const contacts = await Contact.find({ userId: req.user.id });
+  res.json(contacts);
+});
+
+// Exemplo de rota para obter mensagens
+router.get('/messages/:contactId', auth, async (req, res) => {
+  const messages = await Message.find({
+    $or: [
+      { senderId: req.user.id, recipientId: req.params.contactId },
+      { senderId: req.params.contactId, recipientId: req.user.id }
+    ]
+  });
+  res.json(messages);
+});
+
+// Exemplo de rota para enviar mensagem
+router.post('/messages', auth, async (req, res) => {
+  const message = new Message({
+    senderId: req.user.id,
+    recipientId: req.body.recipientId,
+    text: req.body.text
+  });
+  await message.save();
+  res.status(201).json(message);
+});
+
 module.exports = router;

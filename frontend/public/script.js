@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (response.ok) {
         localStorage.setItem('token', data.token);
         showMessage('error-message', '✅ Login realizado com sucesso!', false);
-        setTimeout(() => window.location.href = 'index.html', 2000);
+        setTimeout(() => window.location.href = 'app.html', 2000);
       } else {
         showMessage('error-message', data.error || 'Erro ao fazer login.');
       }
@@ -101,21 +101,126 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Chamar a função de rota protegida somente se estivermos na página principal (index.html)
-  if (window.location.pathname.endsWith('index.html')) {
-    fetchProtectedData();
+  // Verificar se o usuário está autenticado ao carregar a página app.html
+  if (window.location.pathname.endsWith('app.html')) {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = 'login.html';
+    } else {
+      fetchProtectedData();
+    }
   }
-});
 
-document.addEventListener('DOMContentLoaded', function() {
+  // Handle de logout
+  document.getElementById('logout-button')?.addEventListener('click', () => {
+    localStorage.removeItem('token');
+    window.location.href = 'login.html';
+  });
+
+  // Status do avatar
   const statusSelect = document.getElementById('status');
   const avatarBorder = document.querySelector('.avatar-border');
 
-  statusSelect.addEventListener('change', function() {
+  statusSelect?.addEventListener('change', function() {
     // Remove todas as classes de status anteriores
     avatarBorder.classList.remove('online', 'ausente', 'ocupado', 'invisivel');
     
     // Adiciona a nova classe de acordo com a seleção
     avatarBorder.classList.add(this.value);
   });
+
+  // Função para carregar contatos
+  const token = localStorage.getItem('token');
+  if (!token && window.location.pathname.endsWith('app.html')) {
+    window.location.href = 'login.html';
+  }
+
+  const contactList = document.getElementById('contact-list');
+  const chatWith = document.getElementById('chat-with');
+  const chatMessages = document.getElementById('chat-messages');
+  const messageInput = document.getElementById('message-input');
+  const sendButton = document.getElementById('send-button');
+  const logoutButton = document.getElementById('logout-button');
+
+  let currentContact = null;
+
+  async function loadContacts() {
+    try {
+      const response = await fetch('http://localhost:3000/api/contacts', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const contacts = await response.json();
+      contactList.innerHTML = '';
+      contacts.forEach(contact => {
+        const li = document.createElement('li');
+        li.textContent = contact.name;
+        li.addEventListener('click', () => {
+          currentContact = contact;
+          chatWith.textContent = `Chat com: ${contact.name}`;
+          loadMessages(contact.id);
+        });
+        contactList.appendChild(li);
+      });
+    } catch (error) {
+      console.error('Erro ao carregar contatos:', error);
+    }
+  }
+
+  async function loadMessages(contactId) {
+    try {
+      const response = await fetch(`http://localhost:3000/api/messages/${contactId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const messages = await response.json();
+      chatMessages.innerHTML = '';
+      messages.forEach(message => {
+        const div = document.createElement('div');
+        div.textContent = `${message.sender}: ${message.text}`;
+        chatMessages.appendChild(div);
+      });
+    } catch (error) {
+      console.error('Erro ao carregar mensagens:', error);
+    }
+  }
+
+  async function sendMessage() {
+    if (!currentContact || !messageInput.value.trim()) return;
+    try {
+      const response = await fetch('http://localhost:3000/api/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          recipientId: currentContact.id,
+          text: messageInput.value
+        })
+      });
+      if (response.ok) {
+        loadMessages(currentContact.id);
+        messageInput.value = '';
+      }
+    } catch (error) {
+      console.error('Erro ao enviar mensagem:', error);
+    }
+  }
+
+  sendButton.addEventListener('click', sendMessage);
+  messageInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      sendMessage();
+    }
+  });
+
+  logoutButton.addEventListener('click', () => {
+    localStorage.removeItem('token');
+    window.location.href = 'login.html';
+  });
+
+  loadContacts();
 });

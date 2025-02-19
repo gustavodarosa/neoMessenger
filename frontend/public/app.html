@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Área Protegida - Neo Messenger</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600&display=swap">
+</head>
+<body>
+  <div class="app-container">
+    <div class="sidebar">
+      <h2><i class="fas fa-user-friends"></i> Contatos</h2>
+      <ul id="contact-list">
+        <!-- Lista de contatos será preenchida dinamicamente -->
+      </ul>
+    </div>
+    <div class="chat-container">
+      <div class="chat-header">
+        <h2 id="chat-with"><i class="fas fa-comments"></i> Chat com: </h2>
+      </div>
+      <div class="chat-messages" id="chat-messages">
+        <!-- Mensagens do chat serão preenchidas dinamicamente -->
+      </div>
+      <div class="chat-input">
+        <input type="text" id="message-input" placeholder="Digite sua mensagem...">
+        <button id="send-button"><i class="fas fa-paper-plane"></i> Enviar</button>
+      </div>
+    </div>
+  </div>
+  <button id="logout-button"><i class="fas fa-sign-out-alt"></i> Sair</button>
+  <script src="script.js"></script>
+</body>
+</html>
