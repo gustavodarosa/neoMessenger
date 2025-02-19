@@ -106,3 +106,13 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchProtectedData();
   }
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+  const statusSelect = document.getElementById('status');
+  const avatarBorder = document.querySelector('.avatar-border');
+
+  statusSelect.addEventListener('change', function() {
+    avatarBorder.classList.remove('online', 'ausente', 'ocupado', 'invisivel');
+    avatarBorder.classList.add(this.value);
+  });
+});

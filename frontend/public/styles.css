@@ -1,4 +1,5 @@
 /* Variáveis de cor e tema */
+
 :root {
   --primary-color: #00A2E8;         /* Azul vibrante */
   --secondary-color: #0078C8;       /* Azul para hover */
@@ -7,6 +8,10 @@
   --input-border-color: #6d6d6d73;    /* Borda das caixas em um tom de azul mais escuro */
   --status-color: rgba(0, 255, 0, 0.5); /* Verde para online */
   --glow-color: rgba(0, 255, 13, 0.5);  /* Cor do glow verde */
+  --online-color: rgb(0, 255, 0); /* Verde para online */
+  --ausente-color: rgb(255, 208, 0); /* Laranja para ausente */
+  --ocupado-color: rgb(255, 0, 0); /* Vermelho para ocupado */
+  --invisivel-color: rgb(128, 128, 128); /* Cinza para invisível */
 }
 
 /* Reset e configurações genéricas */
@@ -42,22 +47,30 @@ body {
 }
 
 /* Conteúdo principal */
-.content {
+.login-container {
   position: relative;
   z-index: 2; /* Garante que o conteúdo fique acima dos efeitos */
+  max-width: 600px; /* Aumenta a largura máxima do contêiner */
+  width: 100%;
+  padding: 20px;
+  border-radius: 10px;
+  border: none; /* Remove a borda */
+  box-shadow: none; /* Remove a sombra */
 }
 
-/* Estilos do formulário com efeito vidro fosco e gradiente em tons de azul */
-form {
+/* Estilos do formulário de login */
+.login-form {
   width: 100%;
-  max-width: 500px;
-  padding: 40px;   
+  padding: 20px;   
   border-radius: 10px;  
   overflow: hidden;
   position: relative;
+  background: none; /* Remove o fundo */
+  border: none; /* Remove a borda */
+  box-shadow: none; /* Remove a sombra */
 }
 
-form::before {
+.login-form::before {
   content: "";
   position: absolute;
   top: -50%;
@@ -78,15 +91,12 @@ form::before {
 .avatar-border {
   display: inline-block;
   padding: 10px;
-  
-  
   border-radius: 10px;
   position: relative;
-  box-shadow: 0 8px 16px rgba(0, 255, 21, 0.315); /* Brilho sutil ao redor, criando o efeito de reflexo */           
-  overflow: hidden; /* Garante que pseudo-elemento não ultrapasse */
+  box-shadow: 0 8px 16px rgba(var(--online-color), 0.3); /* sombra verde */
+  overflow: hidden;
 }
 
-/* Camada de vidro com degradê e brilho */
 .avatar-border::before {
   content: "";
   position: absolute;
@@ -106,8 +116,37 @@ form::before {
   z-index: 1;
   opacity: 0.7; /* Aumenta a opacidade para dar um visual de vidro mais sólido */
   border: 1px solid rgba(255, 255, 255, 0.5); /* Borda mais visível para definir melhor o efeito */
-  box-shadow: 0 8px 16px rgba(255, 255, 255, 0.25), /* Brilho sutil ao redor, criando o efeito de reflexo */
-              
+  
+}
+
+.avatar-border.online::before {
+  background: linear-gradient(
+    to bottom,
+    rgb(255, 255, 255), var(--online-color)
+  );
+}
+
+.avatar-border.ausente::before {
+  background: linear-gradient(
+    to bottom,
+    rgb(255, 255, 255), var(--ausente-color)
+  );
+  box-shadow: 0 8px 16px #; /* sombra laranja */
+
+}
+
+.avatar-border.ocupado::before {
+  background: linear-gradient(
+    to bottom,
+    rgb(255, 255, 255), var(--ocupado-color)
+  );
+}
+
+.avatar-border.invisivel::before {
+  background: linear-gradient(
+    to bottom,
+    rgb(255, 255, 255), var(--invisivel-color)
+  );
 }
 
 .avatar {
@@ -138,7 +177,8 @@ form::before {
 
 input[type="text"],
 input[type="email"],
-input[type="password"] {
+input[type="password"],
+select {
   width: 100%;
   padding: 4px 6px;
   border: 1px solid var(--input-border-color);
@@ -149,7 +189,8 @@ input[type="password"] {
   transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
-input:focus {
+input:focus,
+select:focus {
   outline: none;
   border-color: var(--primary-color);
   background-color: #F0F8FF;
@@ -208,6 +249,14 @@ button:hover {
   font-weight: 300;
 }
 
+/* Centralizar o texto "Não tem uma conta? Cadastre-se" */
+.center-text {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 16px;
+  color: var(--text-color);
+}
+
 @keyframes colorChange {
   0% {
     background: linear-gradient(
@@ -231,4 +280,3 @@ button:hover {
     ), var(--status-color-start);
   }
 }
-
