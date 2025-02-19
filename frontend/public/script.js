@@ -13,13 +13,12 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('register-form')?.addEventListener('submit', async (event) => {
     event.preventDefault();
 
-    const username = document.getElementById('username').value;
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const confirmPassword = document.getElementById('confirm-password').value;
+    const username = document.getElementById('username')?.value;
+    const email = document.getElementById('email')?.value;
+    const password = document.getElementById('password')?.value;
+    const confirmPassword = document.getElementById('confirm-password')?.value;
 
-    // Opcional: Verificação de senha igual
-    if(password !== confirmPassword){
+    if (password !== confirmPassword) {
       showMessage('error-message', 'As senhas não coincidem.');
       return;
     }
@@ -28,9 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const response = await fetch('http://localhost:3000/api/users/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, password }),
+        body: JSON.stringify({ username, email, password })
       });
-
       const data = await response.json();
 
       if (response.ok) {
@@ -48,22 +46,24 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('login-form')?.addEventListener('submit', async (event) => {
     event.preventDefault();
 
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+    const email = document.getElementById('email')?.value;
+    const password = document.getElementById('password')?.value;
 
     try {
       const response = await fetch('http://localhost:3000/api/users/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password })
       });
-
       const data = await response.json();
 
       if (response.ok) {
         localStorage.setItem('token', data.token);
         showMessage('error-message', '✅ Login realizado com sucesso!', false);
-        setTimeout(() => window.location.href = 'app.html', 2000);
+        setTimeout(() => {
+          const screenHeight = window.screen.height * 0.75;
+          window.open('app.html', '_blank', `width=300,height=${screenHeight}`);
+        }, 2000);
       } else {
         showMessage('error-message', data.error || 'Erro ao fazer login.');
       }
@@ -72,9 +72,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Função para fazer requisição para uma rota protegida
+  // Função para fazer requerimento para uma rota protegida
   async function fetchProtectedData() {
     const token = localStorage.getItem('token');
+    console.log("Token found:", token);
     if (!token) {
       showMessage('error-message', 'Você precisa estar logado para acessar esta rota.');
       return;
@@ -88,7 +89,6 @@ document.addEventListener('DOMContentLoaded', () => {
           'Authorization': `Bearer ${token}`
         }
       });
-
       const data = await response.json();
 
       if (response.ok) {
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Verificar se o usuário está autenticado ao carregar a página app.html
+  // Verificar se o usuário está autenticado na página app.html
   if (window.location.pathname.endsWith('app.html')) {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -120,16 +120,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // Status do avatar
   const statusSelect = document.getElementById('status');
   const avatarBorder = document.querySelector('.avatar-border');
+  if (statusSelect && avatarBorder) {
+    statusSelect.addEventListener('change', function() {
+      avatarBorder.classList.remove('online', 'ausente', 'ocupado', 'invisivel');
+      avatarBorder.classList.add(this.value);
+    });
+  }
 
-  statusSelect?.addEventListener('change', function() {
-    // Remove todas as classes de status anteriores
-    avatarBorder.classList.remove('online', 'ausente', 'ocupado', 'invisivel');
-    
-    // Adiciona a nova classe de acordo com a seleção
-    avatarBorder.classList.add(this.value);
-  });
-
-  // Função para carregar contatos
+  // Carregar contatos e mensagens
   const token = localStorage.getItem('token');
   if (!token && window.location.pathname.endsWith('app.html')) {
     window.location.href = 'login.html';
@@ -140,29 +138,49 @@ document.addEventListener('DOMContentLoaded', () => {
   const chatMessages = document.getElementById('chat-messages');
   const messageInput = document.getElementById('message-input');
   const sendButton = document.getElementById('send-button');
-  const logoutButton = document.getElementById('logout-button');
 
   let currentContact = null;
 
   async function loadContacts() {
+    console.log("loadContacts executed");
     try {
       const response = await fetch('http://localhost:3000/api/contacts', {
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
+      console.log("Response status:", response.status);
       const contacts = await response.json();
-      contactList.innerHTML = '';
-      contacts.forEach(contact => {
+      console.log("Contacts data:", contacts);
+
+      contactList.innerHTML = ''; // Limpar contatos existentes
+
+      if (contacts.length === 0) {
         const li = document.createElement('li');
-        li.textContent = contact.name;
-        li.addEventListener('click', () => {
-          currentContact = contact;
-          chatWith.textContent = `Chat com: ${contact.name}`;
-          loadMessages(contact.id);
-        });
+        li.style.listStyle = 'none';
+        li.innerHTML = `Bem vindo ao NeoMessenger, você ainda não tem nimguém na lista de contatos. <a href="#" id="add-contact-link">Adicionar contato</a>.`;
         contactList.appendChild(li);
-      });
+        const addContactLink = document.getElementById('add-contact-link');
+        if (addContactLink) {
+          addContactLink.addEventListener('click', () => {
+            console.log('Add contact clicked');
+            // Adicione sua lógica de "adicionar contato" aqui
+          });
+        }
+      } else {
+        contacts.forEach(contact => {
+          const li = document.createElement('li');
+          li.textContent = contact.name;
+          li.addEventListener('click', () => {
+            const chatWithEl = document.getElementById('chat-with');
+            if (chatWithEl) {
+              chatWithEl.textContent = `Chat com: ${contact.name}`;
+            }
+            loadMessages(contact.id);
+          });
+          contactList.appendChild(li);
+        });
+      }
     } catch (error) {
       console.error('Erro ao carregar contatos:', error);
     }
@@ -215,11 +233,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'Enter') {
       sendMessage();
     }
-  });
-
-  logoutButton.addEventListener('click', () => {
-    localStorage.removeItem('token');
-    window.location.href = 'login.html';
   });
 
   loadContacts();

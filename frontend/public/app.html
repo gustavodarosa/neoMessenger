@@ -3,33 +3,133 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Área Protegida - Neo Messenger</title>
+  <title>Contatos - Neo Messenger</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600&display=swap">
+  <style>
+    /* Estilos específicos para app.html */
+    body {
+      margin: 0; /* Remover margens */
+      height: 100vh; /* Garantir que o body ocupe toda a altura da janela */
+      background: none; /* Remover plano de fundo branco */
+    }
+
+    .app-container {
+      display: flex;
+      width: 100%;
+      height: 100%; /* Ocupa toda a altura do body */
+      border-radius: 0; /* Remover bordas arredondadas */
+      box-shadow: none; /* Remover sombra */
+      overflow: hidden;
+    }
+
+    .sidebar {
+      position: fixed;  /* Garante que a sidebar permaneça fixa */
+      top: 0;           /* Inicia do topo */
+      left: 0;          /* Inicia da esquerda */
+      width: 100%;      /* Ocupa toda a largura */
+      height: 100%;     /* Ocupa toda a altura */
+      background-color: #f0f0f0;
+      padding: 20px;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Override para o avatar para não ficar circular */
+    .user-header .avatar {
+      border-radius: 8px; /* Altera de 50% para 8px */
+      width: 80px; /* Tamanho diminuído */
+      height: auto;
+    }
+
+    .user-header {
+      display: flex;
+      align-items: center;
+    }
+    .avatar-border {
+      margin-right: 10px; /* Espaço entre avatar e user-info */
+    }
+
+    /* Reset margins for user-info children and set uniform gap */
+    .user-info h2,
+    .user-info p {
+      margin: 0;
+    }
+    .user-info {
+      display: flex;
+      flex-direction: column;
+      gap: 10px; /* Adjust gap as needed for consistent spacing */
+    }
+
+    .contacts-header {
+      display: flex;
+      justify-content: flex-start; /* left aligned */
+      margin-top: 20px;
+    }
+    .contacts-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .contacts-actions input {
+      width: 200px; /* Ajuste de largura conforme necessário */
+    }
+    .contacts-actions button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 18px; /* Ajuste o tamanho do ícone conforme necessário */
+      color: var(--primary-color);
+    }
+    .search-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+    .add-contact-icon {
+      position: absolute;
+      top: 50%;
+      right: 5px; /* Icon now on the right side */
+      transform: translateY(-50%);
+      background: transparent;
+      cursor: pointer;
+      font-size: 18px;
+      color: var(--primary-color);
+      z-index: 1;
+    }
+    #contact-search {
+      padding-right: 30px; /* Add right padding to avoid overlap with icon */
+      width: 200px;
+    }
+  </style>
 </head>
 <body>
   <div class="app-container">
     <div class="sidebar">
-      <h2><i class="fas fa-user-friends"></i> Contatos</h2>
+      <div class="user-header">
+        <div class="avatar-border">
+          <img src="../assets/avatar.png" alt="Avatar" class="avatar">
+        </div>
+        <div class="user-info">
+          <h2 id="user-name">Nome do Usuário</h2>
+          <p id="user-bio">Bio do usuário</p>
+          <p id="user-status">Status: Online</p>
+        </div>
+      </div>
+      <div class="contacts-header" id="contacts-header">
+        <div class="contacts-actions">
+          <div class="search-wrapper">
+            <div class="add-contact-icon">
+              <i class="fas fa-user-plus"></i>
+            </div>
+            <input type="text" id="contact-search" placeholder="Pesquisar contatos...">
+          </div>
+        </div>
+      </div>
       <ul id="contact-list">
         <!-- Lista de contatos será preenchida dinamicamente -->
       </ul>
     </div>
-    <div class="chat-container">
-      <div class="chat-header">
-        <h2 id="chat-with"><i class="fas fa-comments"></i> Chat com: </h2>
-      </div>
-      <div class="chat-messages" id="chat-messages">
-        <!-- Mensagens do chat serão preenchidas dinamicamente -->
-      </div>
-      <div class="chat-input">
-        <input type="text" id="message-input" placeholder="Digite sua mensagem...">
-        <button id="send-button"><i class="fas fa-paper-plane"></i> Enviar</button>
-      </div>
-    </div>
   </div>
-  <button id="logout-button"><i class="fas fa-sign-out-alt"></i> Sair</button>
   <script src="script.js"></script>
 </body>
 </html>
