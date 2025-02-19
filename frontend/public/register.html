@@ -6,13 +6,21 @@
   <meta name="theme-color" content="#00A2E8">
   <title>Registro - Neo Messenger</title>
   <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Exemplo básico de estilo para a mensagem */
+    .message {
+      text-align: center;
+      font-size: 14px;
+      margin-top: 15px;
+      display: none;
+    }
+  </style>
 </head>
 <body>
   <form id="register-form">
     <div class="avatar-container">
       <div class="avatar-border">
-        <div class="avatar-glass"></div>
-        <img src="/frontend/assets/avatar.png" alt="Avatar" class="avatar">
+        <img src="../assets/avatar.png" alt="Avatar" class="avatar">
       </div>
     </div>
     <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 20px;">
@@ -39,12 +47,13 @@
       <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirme sua senha" required>
     </div>
     
-    <button type="submit">Registrar</button>
+    <button class="aero" type="submit">Registrar</button>
     <p class="message" id="error-message"></p>
     
     <p style="text-align: center; margin-top: 20px; font-size: 14px;">
       Já tem uma conta? <a href="login.html" style="color: var(--primary-color); text-decoration: none;">Fazer login</a>
     </p>
   </form>
+  <script src="script.js"></script>
 </body>
 </html>

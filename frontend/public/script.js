@@ -16,6 +16,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const username = document.getElementById('username').value;
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirm-password').value;
+
+    // Opcional: Verificação de senha igual
+    if(password !== confirmPassword){
+      showMessage('error-message', 'As senhas não coincidem.');
+      return;
+    }
 
     try {
       const response = await fetch('http://localhost:3000/api/users/register', {
@@ -54,7 +61,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await response.json();
 
       if (response.ok) {
-        // Armazenar o token JWT no localStorage
         localStorage.setItem('token', data.token);
         showMessage('error-message', '✅ Login realizado com sucesso!', false);
         setTimeout(() => window.location.href = 'index.html', 2000);
