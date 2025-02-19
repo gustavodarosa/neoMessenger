@@ -40,12 +40,12 @@ router.post('/login', async (req, res) => {
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ error: 'Usuário não encontrado!' });
+      return res.status(400).json({ error: 'Usuário ou senha incorretos!' });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ error: 'Senha incorreta!' });
+      return res.status(400).json({ error: 'Usuário ou senha incorretos!' });
     }
 
     // Gerar um token JWT

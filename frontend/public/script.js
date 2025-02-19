@@ -112,7 +112,10 @@ document.addEventListener('DOMContentLoaded', function() {
   const avatarBorder = document.querySelector('.avatar-border');
 
   statusSelect.addEventListener('change', function() {
+    // Remove todas as classes de status anteriores
     avatarBorder.classList.remove('online', 'ausente', 'ocupado', 'invisivel');
+    
+    // Adiciona a nova classe de acordo com a seleção
     avatarBorder.classList.add(this.value);
   });
 });
