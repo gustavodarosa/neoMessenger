@@ -7,7 +7,7 @@
   --status-color: rgba(0, 255, 0, 0.5);
   --glow-color: rgba(0, 255, 13, 0.5);
   --online-color: 0, 255, 0; /* Verde */
-  --ausente-color: 255, 165, 0; /* Amarelo escuro */
+  --ausente-color: 238, 195, 21; /* Amarelo escuro */
   --ocupado-color: 255, 0, 0; /* Vermelho */
   --invisivel-color: 128, 128, 128; /* Cinza */
 }
@@ -80,7 +80,7 @@ body {
   padding: 10px;
   border-radius: 10px;
   position: relative;
-  box-shadow: 0 8px 16px rgba(var(--online-color), 0.3); /* sombra verde */
+  box-shadow: 0 8px 30px rgba(var(--online-color), 0.5); /* sombra verde */
   overflow: hidden;
   transition: box-shadow 0.5s ease-in-out, background-color 0.5s ease-in-out; /* Transição de background-color */
 }
@@ -92,12 +92,12 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 255, 13, 0.788); /* Cor inicial */
-  backdrop-filter: blur(15px) saturate(120%);
-  -webkit-backdrop-filter: blur(15px) saturate(120%);
+  background-color: rgba(var(--online-color), 0.9); /* Cor inicial */
+  
+  
   border-radius: 10px;
   z-index: 1;
-  opacity: 0.7;
+  
   border: 1px solid rgba(255, 255, 255, 0.5);
   transition: filter 0.5s ease-in-out, background-color 0.5s ease-in-out; /* Transição de background-color */
 }
@@ -130,38 +130,38 @@ body {
 
 .avatar-border.online::before {
   opacity: 1;
-  background-color: rgba(var(--online-color), 0.5); /* Cor para o status online */
+  background-color: rgba(var(--online-color), 0.9); /* Cor para o status online */
 }
 
 .avatar-border.ausente::before {
   opacity: 1;
-  background-color: rgba(var(--ausente-color), 0.5); /* Cor para o status ausente */
+  background-color: rgba(var(--ausente-color), 0.9); /* Cor para o status ausente */
 }
 
 .avatar-border.ocupado::before {
   opacity: 1;
-  background-color: rgba(var(--ocupado-color), 0.5); /* Cor para o status ocupado */
+  background-color: rgba(var(--ocupado-color), 0.9); /* Cor para o status ocupado */
 }
 
 .avatar-border.invisivel::before {
   opacity: 1;
-  background-color: rgba(var(--invisivel-color), 0.5); /* Cor para o status invisível */
+  background-color: rgba(var(--invisivel-color), 0.9); /* Cor para o status invisível */
 }
 
 .avatar-border.online {
-  box-shadow: 0 8px 16px rgba(var(--online-color), 0.3); /* sombra verde */
+  box-shadow: 0 8px 30px rgba(var(--online-color), 0.5); /* sombra verde */
 }
 
 .avatar-border.ausente {
-  box-shadow: 0 8px 16px rgba(var(--ausente-color), 0.3); /* sombra amarela */
+  box-shadow: 0px 8px 30px rgba(var(--ausente-color), 0.5); /* sombra amarela */
 }
 
 .avatar-border.ocupado {
-  box-shadow: 0 8px 16px rgba(var(--ocupado-color), 0.3); /* sombra vermelha */
+  box-shadow: 0 9px 30px rgba(var(--ocupado-color), 0.5); /* sombra vermelha */
 }
 
 .avatar-border.invisivel {
-  box-shadow: 0 8px 16px rgba(var(--invisivel-color), 0.3); /* sombra cinza */
+  box-shadow: 0 8px 30px rgba(var(--invisivel-color), 0.5); /* sombra cinza */
 }
 
 .avatar {
@@ -340,4 +340,42 @@ button:hover {
   background-color: #f0f0f0;
   padding: 20px;
   box-shadow: 2px 0 5px
+}
+
+#moon-icon {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  font-size: 30px;
+  color: #000000b0; /* Cor do ícone */
+  background: transparent; /* Fundo transparente */
+  cursor: pointer;
+  z-index: 1000; /* Garante que o ícone fique acima de outros elementos */
+}
+
+/* Modo escuro */
+.escuro {
+  background: linear-gradient(to bottom, #383838, #0a0a0a 40%); /* Degradê de tons de preto */
+
+  color: #fff;
+}
+
+.escuro .login-container {
+  
+}
+
+.escuro input,
+.escuro select,
+.escuro button {
+  background: #444;
+  color: #fff;
+  border: 1px solid #555;
+}
+
+.escuro #moon-icon {
+  color: #e2d51c;
+}
+
+.escuro label {
+  color: #fff; /* Cor dos labels no modo escuro */
 }

@@ -177,3 +177,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Call the function to load contacts when page loads.
   loadContacts();
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+  const moonIcon = document.getElementById('moon-icon');
+  moonIcon.addEventListener('click', () => {
+    document.body.classList.toggle('escuro');
+  });
+});
