@@ -62,7 +62,7 @@ router.get('/protected', auth, (req, res) => {
 });
 
 // Exemplo de rota para obter contatos
-router.get('/contacts', auth, async (req, res) => {
+router.get('api/contacts', auth, async (req, res) => {
   const contacts = await Contact.find({ userId: req.user.id });
   res.json(contacts);
 });

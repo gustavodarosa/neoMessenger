@@ -5,6 +5,7 @@ const dotenv = require('dotenv');
 const userRoutes = require('./routes/userRoutes'); // Importe as rotas
 const cors = require('cors');
 const errorHandler = require('./middlewares/errorHandler'); // Importe o middleware de tratamento de erros
+const contactRoutes = require('./routes/contactRoutes'); // Caminho correto para seu arquivo de rotas
 
 dotenv.config();
 
@@ -20,6 +21,8 @@ app.use('/api/users', userRoutes); // Prefixo para todas as rotas de usuário
 
 // Middleware de Tratamento de Erros
 app.use(errorHandler); // Adicione o middleware de tratamento de erros
+
+app.use('/api/contacts', contactRoutes);
 
 // Conexão com o MongoDB
 mongoose.connect(process.env.MONGODB_URI, {
