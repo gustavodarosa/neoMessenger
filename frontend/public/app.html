@@ -127,10 +127,18 @@
       </div>
       <!-- Contact List Container -->
       <ul id="contact-list">
+        <!-- Contato de teste para desenvolvimento - REMOVER EM PRODUÇÃO -->
+        <li class="contact-item" onclick="openTestChat('Test User', '123456')">Test User</li>
         <!-- Contacts will be inserted here -->
       </ul>
     </div>
   </div>
   <script src="script.js"></script>
+  <script>
+    function openTestChat(name, id) {
+      // Alterado para usar openChatWindow definida no script.js, passando um objeto com nome e _id
+      openChatWindow({ name: name, _id: id });
+    }
+  </script>
 </body>
 </html>

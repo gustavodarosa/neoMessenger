@@ -379,3 +379,26 @@ button:hover {
 .escuro label {
   color: #fff; /* Cor dos labels no modo escuro */
 }
+
+/* Add cursor change for contact list items */
+.contact-item {
+  cursor: pointer;
+}
+
+.chat-extra-icons {
+  display: flex;
+  gap: 6.18%; /* Updated gap */
+  justify-content: flex-start;
+  margin-top: 1.59%; /* Margin between previous element and icons container */
+}
+
+.chat-extra-icons > div {
+  display: flex;
+  align-items: flex-start; /* Align each icon div at the top */
+}
+
+.chat-extra-icons span {
+  font-size: 1.28rem;
+  line-height: 1;
+  vertical-align: top; /* Ensures the emoji aligns at the top */
+}
