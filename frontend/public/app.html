@@ -100,6 +100,20 @@
       padding-right: 30px; /* Add right padding to avoid overlap with icon */
       width: 200px;
     }
+    /* Estilos para a lista de contatos */
+    #contact-lissst {
+      list-style: none;
+      padding: 0;
+      margin: 20px 0 0 0;
+    }
+    .contact-item {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      cursor: pointer;
+    }
+    .contact-item:hover {
+      background-color: #e0e0e0;
+    }
   </style>
 </head>
 <body>
@@ -126,15 +140,48 @@
         </div>
       </div>
       <!-- Contact List Container -->
-      <ul id="contact-list">
-        <!-- Contato de teste para desenvolvimento - REMOVER EM PRODUÇÃO -->
-        <li class="contact-item" onclick="openTestChat('Test User', '123456')">Test User</li>
-        <!-- Contacts will be inserted here -->
+      <ul id="contact-lissst">
+        <!-- Contatos serão inseridos aqui -->
       </ul>
     </div>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
   <script src="script.js"></script>
   <script>
+    async function fetchContacts() {
+      try {
+        const token = localStorage.getItem('token');
+        const decodedToken = JSON.parse(atob(token.split('.')[1]));
+        const userId = decodedToken._id;
+
+        const response = await fetch('http://localhost:3000/api/contacts', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+        }
+        const contacts = await response.json();
+        const filteredContacts = contacts.filter(contact => contact.user === userId);
+        console.log("Contatos com user " + userId + ":", filteredContacts);
+        
+        // Adicionar contatos filtrados à lista
+        const contactList = document.getElementById('contact-lissst');
+        contactList.innerHTML = ''; // Limpar contatos existentes
+        filteredContacts.forEach(contact => {
+          const li = document.createElement('li');
+          li.textContent = contact.name;
+          li.classList.add('contact-item');
+          li.addEventListener('click', () => {
+            openChatWindow(contact);
+          });
+          contactList.appendChild(li);
+        });
+      } catch (error) {
+        console.error("Erro ao buscar contatos:", error);
+      }
+    }
+    fetchContacts();
+
     function openTestChat(name, id) {
       // Alterado para usar openChatWindow definida no script.js, passando um objeto com nome e _id
       openChatWindow({ name: name, _id: id });
