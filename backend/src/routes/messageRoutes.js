@@ -28,7 +28,7 @@ router.get('/:contactId', authenticateToken, async (req, res) => {
         { sender: req.user._id, recipient: contactId },
         { sender: contactId, recipient: req.user._id }
       ]
-    }).sort('timestamp');
+    }).sort('timestamp').populate('sender', 'name');
     res.status(200).json(messages);
   } catch (error) {
     res.status(500).json({ error: 'Erro ao buscar mensagens.' });

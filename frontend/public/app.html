@@ -223,6 +223,23 @@
       return [userId, contactId].sort().join('_');
     }
 
+    async function fetchMessages(contactId) {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`http://localhost:3000/api/messages/${contactId}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+        }
+        const messages = await response.json();
+        return messages;
+      } catch (error) {
+        console.error("Erro ao buscar mensagens:", error);
+        return [];
+      }
+    }
+
     function openChatWindow(contact) {
       // Agora currentUserId contém o ID real
       const roomId = getRoomId(currentUserId, contact._id);
@@ -239,6 +256,15 @@
         }
         .chat-window h2 {
           /* ...outros estilos... */
+        }
+        .message {
+          margin-bottom: 10px;
+        }
+        .message .sender {
+          font-weight: bold;
+        }
+        .message .text {
+          margin-left: 20px;
         }
         /* ...restante do estilo do seu design... */
       `;
@@ -311,9 +337,7 @@
       
       socket.on('receiveMessage', (message) => {
         if (message.room === roomId) {
-          const msgDiv = chatWindow.document.createElement('div');
-          msgDiv.textContent = message.text;
-          messagesDiv.appendChild(msgDiv);
+          displayMessage(message, messagesDiv);
         }
       });
       
@@ -330,6 +354,30 @@
         });
         messageInput.value = '';
       }
+
+      // Buscar e exibir mensagens salvas
+      fetchMessages(contact._id).then(messages => {
+        messages.forEach(message => {
+          displayMessage(message, messagesDiv);
+        });
+      });
+    }
+
+    function displayMessage(message, container) {
+      const messageDiv = document.createElement('div');
+      messageDiv.classList.add('message');
+      
+      const senderDiv = document.createElement('div');
+      senderDiv.classList.add('sender');
+      senderDiv.textContent = `${message.sender.name} diz:`; // Exibir o nome do usuário
+      
+      const textDiv = document.createElement('div');
+      textDiv.classList.add('text');
+      textDiv.textContent = `• ${message.text}`;
+      
+      messageDiv.appendChild(senderDiv);
+      messageDiv.appendChild(textDiv);
+      container.appendChild(messageDiv);
     }
 
     // Função para buscar e exibir os logs
