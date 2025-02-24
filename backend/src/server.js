@@ -10,6 +10,7 @@ const messageRoutes = require('./routes/messageRoutes'); // Caminho correto para
 const logRoutes = require('./routes/logRoutes'); // Importe a rota de logs
 const http = require('http');
 const { Server } = require('socket.io');
+const Message = require('./models/Message'); // Importe o modelo de mensagem (ajuste o caminho se necessário)
 
 dotenv.config(); // Carregar variáveis de ambiente do arquivo .env
 
@@ -51,9 +52,21 @@ io.on('connection', (socket) => {
     console.log(`🔌 Cliente ${socket.id} entrou na sala ${room}`);
   });
 
-  socket.on('sendMessage', (message) => {
-    io.to(message.room).emit('receiveMessage', message);
-    console.log(`🔌 Mensagem enviada para a sala ${message.room}:`, message);
+  socket.on('sendMessage', async (message) => {
+    try {
+      // Salvar no banco de dados
+      const newMessage = new Message({
+        sender: message.sender,
+        recipient: message.recipient,
+        text: message.text,
+        timestamp: new Date()
+      });
+      await newMessage.save();
+      // Emite para todos na sala
+      io.to(message.room).emit('receiveMessage', message);
+    } catch (error) {
+      console.error('Erro ao salvar mensagem:', error);
+    }
   });
 
   socket.on('disconnect', () => {

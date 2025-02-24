@@ -320,8 +320,14 @@
       // Função local para enviar mensagem
       function sendMessage(rId) {
         const messageInput = chatWindow.document.getElementById('message-input');
-        const message = messageInput.value;
-        socket.emit('sendMessage', { room: rId, text: message });
+        const messageText = messageInput.value;
+        // Incluir IDs ao emitir
+        socket.emit('sendMessage', {
+          room: rId,
+          text: messageText,
+          sender: currentUserId,
+          recipient: contact._id
+        });
         messageInput.value = '';
       }
     }
