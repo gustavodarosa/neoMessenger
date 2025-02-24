@@ -229,6 +229,21 @@
       
       const chatWindow = window.open('', '_blank', 'width=400,height=500');
       
+      // Cole seus estilos (ou link) aqui
+      const styleTag = chatWindow.document.createElement('style');
+      styleTag.textContent = `
+        /* Exemplo de estilos do seu design anterior */
+        .chat-window {
+          background-color: #fafafa;
+          /* ...outros estilos... */
+        }
+        .chat-window h2 {
+          /* ...outros estilos... */
+        }
+        /* ...restante do estilo do seu design... */
+      `;
+      chatWindow.document.head.appendChild(styleTag);
+      
       // Configurar o corpo da nova janela
       chatWindow.document.body.style.margin = 0;
       chatWindow.document.body.style.padding = 0;
@@ -255,7 +270,7 @@
       
       // Área de mensagens
       const messagesDiv = chatWindow.document.createElement('div');
-      messagesDiv.id = `messages-${roomId}`;
+      messagesDiv.id = 'messagesRoom';
       messagesDiv.style.flex = 1;
       messagesDiv.style.padding = '10px';
       messagesDiv.style.overflowY = 'auto';
@@ -263,13 +278,18 @@
       
       // Input de mensagem
       const input = chatWindow.document.createElement('input');
-      input.id = `message-input-${roomId}`;
+      input.id = 'message-input';
       input.placeholder = 'Digite uma mensagem...';
       input.style.padding = '10px';
       input.style.border = 'none';
       input.style.borderTop = '1px solid #ddd';
       input.style.width = 'calc(100% - 20px)';
       input.style.margin = '0 10px';
+      input.addEventListener('keyup', function(e) {
+        if (e.key === 'Enter') {
+          sendMessage(roomId);
+        }
+      });
       container.appendChild(input);
       
       // Botão Enviar
@@ -299,7 +319,7 @@
       
       // Função local para enviar mensagem
       function sendMessage(rId) {
-        const messageInput = chatWindow.document.getElementById('message-input-' + rId);
+        const messageInput = chatWindow.document.getElementById('message-input');
         const message = messageInput.value;
         socket.emit('sendMessage', { room: rId, text: message });
         messageInput.value = '';
