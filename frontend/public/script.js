@@ -92,33 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.warn("Either 'status' or '.avatar-border' element is missing.");
   }
 
-  // Load contacts and open chat window
-  const contactList = document.getElementById('contact-list');
-  if (contactList) {
-    async function loadContacts() {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:3000/api/contacts', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (!response.ok) throw new Error(`Error: ${response.status}`);
-        const contacts = await response.json();
-        contactList.innerHTML = '';
-        contacts.forEach(contact => {
-          const li = document.createElement('li');
-          li.textContent = contact.name; // adjust if necessary
-          li.classList.add('contact-item');
-          li.addEventListener('click', () => {
-            openChatWindow(contact);
-          });
-          contactList.appendChild(li);
-        });
-      } catch (error) {
-        console.error('Error fetching contacts:', error);
-      }
-    }
-    loadContacts();
-  }
+  
 });
 
 document.addEventListener('DOMContentLoaded', () => {

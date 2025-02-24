@@ -148,16 +148,25 @@
     </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
+  <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
   <script src="script.js"></script>
   <script>
+    let currentUserId; // Inicialmente indefinida
+
     async function fetchContacts() {
       try {
         const token = localStorage.getItem('token');
         console.log("Token being tested:", token); // Log do token que está sendo testado
-        const decodedToken = JSON.parse(atob(token.split('.')[1]));
+        const decodedToken = token ? JSON.parse(atob(token.split('.')[1])) : null;
         console.log("Decoded Token:", decodedToken); // Verificar o token decodificado
-        const userId = decodedToken._id;
+        const userId = decodedToken ? decodedToken._id : null;
         console.log("User ID:", userId); // Verificar o ID do usuário
+
+        if (!userId) {
+          throw new Error("User ID not found.");
+        }
+
+        currentUserId = userId; // Atribuir o ID real do usuário
 
         const response = await fetch('http://localhost:3000/api/contacts', {
           headers: { 'Authorization': `Bearer ${token}` }
@@ -210,9 +219,91 @@
     }
     fetchContacts();
 
-    function openTestChat(name, id) {
-      // Alterado para usar openChatWindow definida no script.js, passando um objeto com nome e _id
-      openChatWindow({ name: name, _id: id });
+    function getRoomId(userId, contactId) {
+      return [userId, contactId].sort().join('_');
+    }
+
+    function openChatWindow(contact) {
+      // Agora currentUserId contém o ID real
+      const roomId = getRoomId(currentUserId, contact._id);
+      
+      const chatWindow = window.open('', '_blank', 'width=400,height=500');
+      
+      // Configurar o corpo da nova janela
+      chatWindow.document.body.style.margin = 0;
+      chatWindow.document.body.style.padding = 0;
+      chatWindow.document.body.style.display = 'flex';
+      chatWindow.document.body.style.flexDirection = 'column';
+      chatWindow.document.body.style.height = '100vh';
+      
+      // Criar container principal
+      const container = chatWindow.document.createElement('div');
+      container.classList.add('chat-window');
+      container.style.display = 'flex';
+      container.style.flexDirection = 'column';
+      container.style.height = '100%';
+      chatWindow.document.body.appendChild(container);
+      
+      // Criar header
+      const header = chatWindow.document.createElement('h2');
+      header.textContent = `Chat com ${contact.name}`;
+      header.style.margin = 0;
+      header.style.padding = '10px';
+      header.style.backgroundColor = '#f0f0f0';
+      header.style.borderBottom = '1px solid #ddd';
+      container.appendChild(header);
+      
+      // Área de mensagens
+      const messagesDiv = chatWindow.document.createElement('div');
+      messagesDiv.id = `messages-${roomId}`;
+      messagesDiv.style.flex = 1;
+      messagesDiv.style.padding = '10px';
+      messagesDiv.style.overflowY = 'auto';
+      container.appendChild(messagesDiv);
+      
+      // Input de mensagem
+      const input = chatWindow.document.createElement('input');
+      input.id = `message-input-${roomId}`;
+      input.placeholder = 'Digite uma mensagem...';
+      input.style.padding = '10px';
+      input.style.border = 'none';
+      input.style.borderTop = '1px solid #ddd';
+      input.style.width = 'calc(100% - 20px)';
+      input.style.margin = '0 10px';
+      container.appendChild(input);
+      
+      // Botão Enviar
+      const button = chatWindow.document.createElement('button');
+      button.textContent = 'Enviar';
+      button.style.padding = '10px';
+      button.style.border = 'none';
+      button.style.backgroundColor = 'var(--primary-color)';
+      button.style.color = '#fff';
+      button.style.cursor = 'pointer';
+      button.onclick = function() {
+        sendMessage(roomId);
+      };
+      container.appendChild(button);
+      
+      // Configurar socket com o roomID gerado
+      const socket = io('http://localhost:3000');
+      socket.emit('joinRoom', roomId);
+      
+      socket.on('receiveMessage', (message) => {
+        if (message.room === roomId) {
+          const msgDiv = chatWindow.document.createElement('div');
+          msgDiv.textContent = message.text;
+          messagesDiv.appendChild(msgDiv);
+        }
+      });
+      
+      // Função local para enviar mensagem
+      function sendMessage(rId) {
+        const messageInput = chatWindow.document.getElementById('message-input-' + rId);
+        const message = messageInput.value;
+        socket.emit('sendMessage', { room: rId, text: message });
+        messageInput.value = '';
+      }
     }
 
     // Função para buscar e exibir os logs
