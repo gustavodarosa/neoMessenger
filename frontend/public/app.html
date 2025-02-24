@@ -363,6 +363,9 @@
       messageDiv.appendChild(senderDiv);
       messageDiv.appendChild(textDiv);
       container.appendChild(messageDiv);
+      
+      // Scroll to the bottom after appending
+      container.scrollTop = container.scrollHeight;
     }
 
     async function viewLogs() {
