@@ -20,7 +20,8 @@ router.post('/register', async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ username, email, password: hashedPassword });
+    // Map "username" to "name" in the model
+    const newUser = new User({ name: username, email, password: hashedPassword });
     await newUser.save();
 
     res.status(201).json({ message: '✅ Usuário registrado com sucesso!' });
@@ -59,6 +60,17 @@ router.post('/login', async (req, res) => {
 // Rota GET protegida para testar o middleware de autenticação
 router.get('/protected', auth, (req, res) => {
   res.status(200).json({ message: 'Você acessou uma rota protegida!', user: req.user });
+});
+
+// Add GET /me route to return the user from the database matching the token
+router.get('/me', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    console.log("User from DB:", user);
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao recuperar o usuário.' });
+  }
 });
 
 // Exemplo de rota para obter contatos

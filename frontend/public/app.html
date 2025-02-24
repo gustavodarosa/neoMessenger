@@ -152,32 +152,39 @@
   <script src="script.js"></script>
   <script>
     let currentUserId; // Inicialmente indefinida
+    let currentUserName; // Inicialmente indefinida
+
+    async function fetchUserInfo() {
+      try {
+        const token = localStorage.getItem('token');
+        console.log("Token atual:", token); // Log do token atual
+        const response = await fetch('http://localhost:3000/api/users/me', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error(`Error: ${response.status}`);
+        const user = await response.json();
+        currentUserId = user._id;
+        currentUserName = user.name || user.username;
+        console.log("User from DB (id igual ao token):", user); // Log the user from DB based on the token
+      } catch (error) {
+        console.error("Erro ao buscar informações do usuário:", error);
+      }
+    }
 
     async function fetchContacts() {
       try {
         const token = localStorage.getItem('token');
-        console.log("Token being tested:", token); // Log do token que está sendo testado
         const decodedToken = token ? JSON.parse(atob(token.split('.')[1])) : null;
-        console.log("Decoded Token:", decodedToken); // Verificar o token decodificado
         const userId = decodedToken ? decodedToken._id : null;
-        console.log("User ID:", userId); // Verificar o ID do usuário
-
-        if (!userId) {
-          throw new Error("User ID not found.");
-        }
-
-        currentUserId = userId; // Atribuir o ID real do usuário
-
+        if (!userId) throw new Error("User ID not found.");
+        currentUserId = userId;
         const response = await fetch('http://localhost:3000/api/contacts', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`Error: ${response.status}`);
         const contacts = await response.json();
         const filteredContacts = contacts.filter(contact => contact.user === userId);
         
-        // Adicionar contatos filtrados à lista
         const contactList = document.getElementById('contact-lissst');
         contactList.innerHTML = ''; // Limpar contatos existentes
         filteredContacts.forEach(contact => {
@@ -190,11 +197,8 @@
           contactList.appendChild(li);
         });
 
-        // Testar a API de mensagens
         if (filteredContacts.length > 0) {
           const testContactId = filteredContacts[0]._id;
-          console.log("Test Contact ID:", testContactId); // Verificar o ID do contato de teste
-          console.log("Testing message API with token:", token); // Log do token que está sendo testado
           const messageResponse = await fetch('http://localhost:3000/api/messages', {
             method: 'POST',
             headers: {
@@ -206,21 +210,13 @@
               text: 'Mensagem de teste'
             })
           });
-          console.log("Message Response Status:", messageResponse.status); // Verificar o status da resposta da mensagem
-          if (!messageResponse.ok) {
-            throw new Error(`Error: ${messageResponse.status}`);
-          }
-          const message = await messageResponse.json();
-          console.log("Mensagem enviada para o contato " + testContactId + ":", message); // Verificar a mensagem enviada
+          if (!messageResponse.ok) throw new Error(`Error: ${messageResponse.status}`);
+          await messageResponse.json();
+          // Debug logs removed
         }
       } catch (error) {
         console.error("Erro ao buscar contatos:", error);
       }
-    }
-    fetchContacts();
-
-    function getRoomId(userId, contactId) {
-      return [userId, contactId].sort().join('_');
     }
 
     async function fetchMessages(contactId) {
@@ -229,9 +225,7 @@
         const response = await fetch(`http://localhost:3000/api/messages/${contactId}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`Error: ${response.status}`);
         const messages = await response.json();
         return messages;
       } catch (error) {
@@ -240,22 +234,20 @@
       }
     }
 
+    function getRoomId(userId, contactId) {
+      return [userId, contactId].sort().join('_');
+    }
+
     function openChatWindow(contact) {
-      // Agora currentUserId contém o ID real
       const roomId = getRoomId(currentUserId, contact._id);
-      
       const chatWindow = window.open('', '_blank', 'width=400,height=500');
       
-      // Cole seus estilos (ou link) aqui
       const styleTag = chatWindow.document.createElement('style');
       styleTag.textContent = `
-        /* Exemplo de estilos do seu design anterior */
         .chat-window {
           background-color: #fafafa;
-          /* ...outros estilos... */
         }
         .chat-window h2 {
-          /* ...outros estilos... */
         }
         .message {
           margin-bottom: 10px;
@@ -266,18 +258,15 @@
         .message .text {
           margin-left: 20px;
         }
-        /* ...restante do estilo do seu design... */
       `;
       chatWindow.document.head.appendChild(styleTag);
       
-      // Configurar o corpo da nova janela
       chatWindow.document.body.style.margin = 0;
       chatWindow.document.body.style.padding = 0;
       chatWindow.document.body.style.display = 'flex';
       chatWindow.document.body.style.flexDirection = 'column';
       chatWindow.document.body.style.height = '100vh';
       
-      // Criar container principal
       const container = chatWindow.document.createElement('div');
       container.classList.add('chat-window');
       container.style.display = 'flex';
@@ -285,7 +274,6 @@
       container.style.height = '100%';
       chatWindow.document.body.appendChild(container);
       
-      // Criar header
       const header = chatWindow.document.createElement('h2');
       header.textContent = `Chat com ${contact.name}`;
       header.style.margin = 0;
@@ -294,7 +282,6 @@
       header.style.borderBottom = '1px solid #ddd';
       container.appendChild(header);
       
-      // Área de mensagens
       const messagesDiv = chatWindow.document.createElement('div');
       messagesDiv.id = 'messagesRoom';
       messagesDiv.style.flex = 1;
@@ -302,7 +289,6 @@
       messagesDiv.style.overflowY = 'auto';
       container.appendChild(messagesDiv);
       
-      // Input de mensagem
       const input = chatWindow.document.createElement('input');
       input.id = 'message-input';
       input.placeholder = 'Digite uma mensagem...';
@@ -318,7 +304,6 @@
       });
       container.appendChild(input);
       
-      // Botão Enviar
       const button = chatWindow.document.createElement('button');
       button.textContent = 'Enviar';
       button.style.padding = '10px';
@@ -330,22 +315,23 @@
         sendMessage(roomId);
       };
       container.appendChild(button);
-      
-      // Configurar socket com o roomID gerado
+
       const socket = io('http://localhost:3000');
       socket.emit('joinRoom', roomId);
       
       socket.on('receiveMessage', (message) => {
-        if (message.room === roomId) {
-          displayMessage(message, messagesDiv);
-        }
+        console.log("Real-time message received:", message);
+        displayMessage(message, messagesDiv);  
       });
       
-      // Função local para enviar mensagem
       function sendMessage(rId) {
         const messageInput = chatWindow.document.getElementById('message-input');
-        const messageText = messageInput.value;
-        // Incluir IDs ao emitir
+        const messageText = messageInput.value.trim();
+        if (!messageText) return;
+        if (!currentUserName) {
+          console.error("currentUserName is undefined");
+          return;
+        }
         socket.emit('sendMessage', {
           room: rId,
           text: messageText,
@@ -354,8 +340,7 @@
         });
         messageInput.value = '';
       }
-
-      // Buscar e exibir mensagens salvas
+      
       fetchMessages(contact._id).then(messages => {
         messages.forEach(message => {
           displayMessage(message, messagesDiv);
@@ -369,7 +354,7 @@
       
       const senderDiv = document.createElement('div');
       senderDiv.classList.add('sender');
-      senderDiv.textContent = `${message.sender.name} diz:`; // Exibir o nome do usuário
+      senderDiv.textContent = `${message.senderName} diz:`; // Use senderName from MongoDB
       
       const textDiv = document.createElement('div');
       textDiv.classList.add('text');
@@ -380,13 +365,10 @@
       container.appendChild(messageDiv);
     }
 
-    // Função para buscar e exibir os logs
     async function viewLogs() {
       try {
         const response = await fetch('http://localhost:3000/api/logs');
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`Error: ${response.status}`);
         const data = await response.json();
         const logsContainer = document.getElementById('logs-container');
         logsContainer.textContent = data.logs;
@@ -397,6 +379,10 @@
     }
 
     document.getElementById('view-logs-button').addEventListener('click', viewLogs);
+
+    // Remove debugging console logs; only error logs remain.
+    fetchUserInfo().then(fetchContacts);
+    // Ensure no extra closing curly bracket here!
   </script>
 </body>
 </html>

@@ -11,6 +11,7 @@ const logRoutes = require('./routes/logRoutes'); // Importe a rota de logs
 const http = require('http');
 const { Server } = require('socket.io');
 const Message = require('./models/Message'); // Importe o modelo de mensagem (ajuste o caminho se necessário)
+const User = require('./models/userModel'); // Adjusted to match the actual filename if needed
 
 dotenv.config(); // Carregar variáveis de ambiente do arquivo .env
 
@@ -54,16 +55,21 @@ io.on('connection', (socket) => {
 
   socket.on('sendMessage', async (message) => {
     try {
-      // Salvar no banco de dados
+      const user = await User.findById(message.sender);
+      if (!user) {
+        throw new Error('Sender not found');
+      }
       const newMessage = new Message({
-        sender: message.sender,
+        sender: user._id,
+        senderName: user.name || user.username || 'Unknown User',
         recipient: message.recipient,
         text: message.text,
         timestamp: new Date()
       });
       await newMessage.save();
-      // Emite para todos na sala
-      io.to(message.room).emit('receiveMessage', message);
+      newMessage.room = message.room; // Ensure that room information is attached
+      console.log("Broadcasting message to room:", message.room);
+      io.to(message.room).emit('receiveMessage', newMessage);
     } catch (error) {
       console.error('Erro ao salvar mensagem:', error);
     }
