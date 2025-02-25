@@ -124,7 +124,7 @@
           <img src="../assets/avatar.png" alt="Avatar" class="avatar">
         </div>
         <div class="user-info">
-          <h2 id="user-name">Nome do Usuário</h2>
+          <h2 id="user-name"></h2>
           <p id="user-bio">Bio do usuário</p>
           <p id="user-status">Status: Online</p>
         </div>
@@ -165,6 +165,10 @@
         const user = await response.json();
         currentUserId = user._id;
         currentUserName = user.name || user.username;
+        
+        // Set the user's name in the h2 with id "user-name"
+        document.getElementById('user-name').textContent = currentUserName;
+        
         console.log("User from DB (id igual ao token):", user); // Log the user from DB based on the token
       } catch (error) {
         console.error("Erro ao buscar informações do usuário:", error);

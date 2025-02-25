@@ -6,7 +6,7 @@ const contactRoutes = require('./src/routes/contactRoutes');
 const messageRoutes = require('./src/routes/messageRoutes');
 
 // Conectar ao MongoDB
-mongoose.connect('mongodb://localhost:27017/neomessenger', {
+mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });

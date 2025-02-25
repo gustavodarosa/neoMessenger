@@ -20,8 +20,8 @@ router.post('/register', async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    // Map "username" to "name" in the model
-    const newUser = new User({ name: username, email, password: hashedPassword });
+    // Use "username" field as defined in the user schema
+    const newUser = new User({ username, email, password: hashedPassword });
     await newUser.save();
 
     res.status(201).json({ message: '✅ Usuário registrado com sucesso!' });
