@@ -86,11 +86,6 @@
       display: inline-block;
     }
     .add-contact-icon {
-      position: absolute;
-      top: 50%;
-      right: 5px; /* Icon now on the right side */
-      transform: translateY(-50%);
-      background: transparent;
       cursor: pointer;
       font-size: 18px;
       color: var(--primary-color);
@@ -130,12 +125,12 @@
         </div>
       </div>
       <div class="contacts-header" id="contacts-header">
-        <div class="contacts-actions">
+        <div class="contacts-actions" style="display: flex; align-items: center; gap: 10px;">
           <div class="search-wrapper">
-            <div class="add-contact-icon">
-              <i class="fas fa-user-plus"></i>
-            </div>
-            <input type="text" id="contact-search" placeholder="Pesquisar contatos...">
+            <input type="text" id="contact-search" placeholder="Pesquisar contatos..." style="width: 200px;">
+          </div>
+          <div class="add-contact-icon" style="cursor: pointer; font-size: 18px; color: var(--primary-color);">
+            <i class="fas fa-user-plus"></i>
           </div>
         </div>
       </div>
@@ -143,8 +138,8 @@
       <ul id="contact-lissst">
         <!-- Contatos serão inseridos aqui -->
       </ul>
-      <button id="view-logs-button">Ver Logs</button> <!-- Botão para visualizar os logs -->
-      <pre id="logs-container" style="display: none;"></pre> <!-- Contêiner para exibir os logs -->
+      <!-- Remove the "Logout" button -->
+      <!-- <button id="logout-button">Logout</button> -->
     </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
@@ -175,53 +170,85 @@
       }
     }
 
+    // Enhanced fetchContacts function with better logging
     async function fetchContacts() {
       try {
         const token = localStorage.getItem('token');
-        const decodedToken = token ? JSON.parse(atob(token.split('.')[1])) : null;
-        const userId = decodedToken ? decodedToken._id : null;
-        if (!userId) throw new Error("User ID not found.");
-        currentUserId = userId;
+        if (!token) {
+          console.error("No authentication token found");
+          return;
+        }
+        
+        console.log("Fetching contacts from database...");
         const response = await fetch('http://localhost:3000/api/contacts', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
-        if (!response.ok) throw new Error(`Error: ${response.status}`);
-        const contacts = await response.json();
-        const filteredContacts = contacts.filter(contact => contact.user === userId);
         
-        const contactList = document.getElementById('contact-lissst');
-        contactList.innerHTML = ''; // Limpar contatos existentes
-        filteredContacts.forEach(contact => {
-          const li = document.createElement('li');
-          li.textContent = contact.name;
-          li.classList.add('contact-item');
-          li.addEventListener('click', () => {
-            openChatWindow(contact);
-          });
-          contactList.appendChild(li);
-        });
-
-        if (filteredContacts.length > 0) {
-          const testContactId = filteredContacts[0]._id;
-          const messageResponse = await fetch('http://localhost:3000/api/messages', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({
-              recipientId: testContactId,
-              text: 'Mensagem de teste'
-            })
-          });
-          if (!messageResponse.ok) throw new Error(`Error: ${messageResponse.status}`);
-          await messageResponse.json();
-          // Debug logs removed
+        if (!response.ok) {
+          console.error(`Error fetching contacts: ${response.status}`);
+          return;
         }
+        
+        const contacts = await response.json();
+        console.log("All contacts:", contacts);
+        console.log(`Total contacts found: ${contacts.length}`);
+        
+        // If no contacts found, log a message
+        if (contacts.length === 0) {
+          console.log("No contacts found. You may need to add some contacts first.");
+        } else {
+          // Log each contact with detailed information
+          contacts.forEach((contact, index) => {
+            console.log(`Contact ${index + 1}:`, {
+              id: contact._id,
+              userId: contact.userId,
+              contactId: contact.contactId,
+              createdAt: contact.createdAt
+            });
+          });
+        }
+        
+        // Display contacts in the UI
+        const contactList = document.getElementById('contact-lissst');
+        contactList.innerHTML = ''; // Clear existing contacts
+        
+        if (contacts.length === 0) {
+          const emptyMessage = document.createElement('li');
+          emptyMessage.textContent = "No contacts found";
+          emptyMessage.style.textAlign = 'center';
+          emptyMessage.style.padding = '20px';
+          contactList.appendChild(emptyMessage);
+        } else {
+          contacts.forEach(contact => {
+            const li = document.createElement('li');
+            li.textContent = contact.name || `Contact: ${contact.contactId}`;
+            li.classList.add('contact-item');
+            li.addEventListener('click', () => {
+              openChatWindow(contact);
+            });
+            contactList.appendChild(li);
+          });
+        }
+        
+        return contacts;
       } catch (error) {
-        console.error("Erro ao buscar contatos:", error);
+        console.error("Exception while fetching contacts:", error);
+        return [];
       }
     }
+
+    // Add this to global window object so you can call it from browser console
+    window.fetchContacts = fetchContacts;
+    
+    // Add a function to fetch contacts any time
+    async function refreshContacts() {
+      console.log("Refreshing contacts...");
+      await fetchContacts();
+      console.log("Contacts refreshed");
+    }
+    
+    // Also add to window object
+    window.refreshContacts = refreshContacts;
 
     async function fetchMessages(contactId) {
       try {
@@ -238,12 +265,20 @@
       }
     }
 
-    function getRoomId(userId, contactId) {
-      return [userId, contactId].sort().join('_');
+    function getRoomId(userId1, userId2) {
+      // Always sort the IDs to ensure both users generate the same room ID
+      return [userId1, userId2].sort().join('_');
     }
 
     function openChatWindow(contact) {
-      const roomId = getRoomId(currentUserId, contact._id);
+      // Use contact.contactId instead of contact._id - this is the actual user ID of the person
+      // If your contact model uses a different field name, adjust accordingly
+      const contactUserId = contact.contactId || contact.userId || contact._id;
+      console.log("Creating chat room between users:", currentUserId, "and", contactUserId);
+      
+      const roomId = getRoomId(currentUserId, contactUserId);
+      console.log("Generated room ID:", roomId);
+      
       const chatWindow = window.open('', '_blank', 'width=400,height=500');
       
       const styleTag = chatWindow.document.createElement('style');
@@ -340,12 +375,12 @@
           room: rId,
           text: messageText,
           sender: currentUserId,
-          recipient: contact._id
+          recipient: contactUserId // Use the correct user ID here too
         });
         messageInput.value = '';
       }
       
-      fetchMessages(contact._id).then(messages => {
+      fetchMessages(contactUserId).then(messages => {
         messages.forEach(message => {
           displayMessage(message, messagesDiv);
         });
@@ -372,21 +407,35 @@
       container.scrollTop = container.scrollHeight;
     }
 
-    async function viewLogs() {
+    // Add click listener to open the addContact window
+    document.querySelector('.add-contact-icon').addEventListener('click', () => {
+      window.open('addContact.html', '_blank', 'width=400,height=300');
+    });
+    
+    // Add a utility function to see all users from the console
+    async function viewAllUsers() {
       try {
-        const response = await fetch('http://localhost:3000/api/logs');
-        if (!response.ok) throw new Error(`Error: ${response.status}`);
-        const data = await response.json();
-        const logsContainer = document.getElementById('logs-container');
-        logsContainer.textContent = data.logs;
-        logsContainer.style.display = 'block';
+        const token = localStorage.getItem('token');
+        if (!token) return console.error("No token found");
+        
+        const response = await fetch('http://localhost:3000/api/users/all', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (!response.ok) return console.error("Error fetching users:", response.status);
+        
+        const users = await response.json();
+        console.log("All users in database:", users);
+        return users;
       } catch (error) {
-        console.error('Erro ao buscar logs:', error);
+        console.error("Exception fetching users:", error);
+        return null;
       }
     }
-
-    document.getElementById('view-logs-button').addEventListener('click', viewLogs);
-
+    
+    // Add this to global window object so you can call it from browser console
+    window.viewAllUsers = viewAllUsers;
+    
     // Remove debugging console logs; only error logs remain.
     fetchUserInfo().then(fetchContacts);
     // Ensure no extra closing curly bracket here!

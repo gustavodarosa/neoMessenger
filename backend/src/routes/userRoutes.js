@@ -73,6 +73,20 @@ router.get('/me', auth, async (req, res) => {
   }
 });
 
+// Add this new route to get all users
+router.get('/all', auth, async (req, res) => {
+  try {
+    // Get all users from the database, excluding password fields
+    const users = await User.find({}, { password: 0 });
+    
+    // Return the users as JSON
+    res.json(users);
+  } catch (error) {
+    console.error('Error fetching all users:', error);
+    res.status(500).json({ error: 'Failed to fetch users' });
+  }
+});
+
 // Exemplo de rota para obter contatos
 router.get('api/contacts', auth, async (req, res) => {
   const contacts = await Contact.find({ userId: req.user.id });

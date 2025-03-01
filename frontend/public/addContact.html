@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buscar Contato - Neo Messenger</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #f0f0f0;
+    }
+    .container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+    input[type="text"] {
+      width: 300px;
+      padding: 10px;
+      font-size: 1rem;
+    }
+    button {
+      padding: 10px;
+      font-size: 1rem;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+    #result-message {
+      margin-top: 10px;
+      font-size: 1rem;
+    }
+    .user-result {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      text-align: left;
+    }
+    .add-button {
+      margin-top: 10px;
+      padding: 8px 15px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .add-button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Buscar Contato</h2>
+    <input type="text" id="search-username" placeholder="Digite o username">
+    <button id="search-button">Buscar</button>
+    <div id="result-message"></div>
+    <div id="user-result" class="user-result" style="display: none;"></div>
+  </div>
+  <script>
+    async function searchUser(username) {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`http://localhost:3000/api/users/search?username=${encodeURIComponent(username)}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (!response.ok) {
+          if (response.status === 404) {
+            return null;
+          }
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        return data;
+        
+      } catch (error) {
+        return null;
+      }
+    }
+
+    // Fixed fetchAllUsers function with correct syntax
+    async function fetchAllUsers() {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          console.error("No authentication token found");
+          return;
+        }
+        
+        console.log("Fetching all users from database...");
+        
+        const response = await fetch('http://localhost:3000/api/users/all', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (!response.ok) {
+          console.error(`HTTP error! status: ${response.status}`);
+          console.error('API endpoint /api/users/all not found. Make sure the backend route is implemented.');
+          return;
+        }
+        
+        const users = await response.json();
+        console.log("All users in database:", users);
+        console.log(`Total users found: ${users.length || 'unknown'}`);
+        
+        if (Array.isArray(users)) {
+          // Log individual user details for better visibility
+          users.forEach((user, index) => {
+            console.log(`User ${index + 1}:`, {
+              id: user._id,
+              username: user.username,
+              name: user.name || '(No name)'
+            });
+          });
+        }
+        
+        return users;
+      } catch (error) {
+        console.error("Error fetching all users:", error);
+        return [];
+      }
+    }
+    
+    // Call the function but handle errors gracefully
+    fetchAllUsers().catch(error => console.error("Failed to fetch users:", error));
+
+    document.getElementById('search-button').addEventListener('click', async () => {
+      const username = document.getElementById('search-username').value.trim();
+      const resultMessage = document.getElementById('result-message');
+      const userResultDiv = document.getElementById('user-result');
+      
+      // Reset UI
+      resultMessage.textContent = "";
+      userResultDiv.style.display = "none";
+      userResultDiv.innerHTML = "";
+      
+      if (!username) {
+        resultMessage.textContent = "Por favor, digite um username.";
+        return;
+      }
+      
+      resultMessage.textContent = "Buscando...";
+      const user = await searchUser(username);
+      
+      if (user) {
+        resultMessage.textContent = `Usuário encontrado: ${user.username}`;
+        
+        // Display user information
+        userResultDiv.style.display = "block";
+        userResultDiv.innerHTML = `
+          <h3>${user.username}</h3>
+          <p>${user.name || ''}</p>
+          <button class="add-button" id="add-contact-button">Adicionar Contato</button>
+        `;
+        
+        // Add event listener to the add contact button
+        document.getElementById('add-contact-button').addEventListener('click', async () => {
+          try {
+            const token = localStorage.getItem('token');
+            const response = await fetch('http://localhost:3000/api/contacts', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({ contactId: user._id })
+            });
+            
+            if (!response.ok) {
+              const errorData = await response.json();
+              resultMessage.textContent = `Erro: ${errorData.error || 'Não foi possível adicionar o contato.'}`;
+              return;
+            }
+            
+            resultMessage.textContent = "Contato adicionado com sucesso!";
+            setTimeout(() => window.close(), 2000); // Close window after 2 seconds
+            
+          } catch (error) {
+            resultMessage.textContent = "Erro ao adicionar contato.";
+          }
+        });
+      } else {
+        resultMessage.textContent = "Usuário não encontrado.";
+      }
+    });
+
+    document.getElementById('search-username').addEventListener('keyup', (e) => {
+      if (e.key === 'Enter') {
+        document.getElementById('search-button').click();
+      }
+    });
+  </script>
+</body>
+</html>
