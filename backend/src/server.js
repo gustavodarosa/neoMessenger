@@ -12,6 +12,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const Message = require('./models/Message'); // Importe o modelo de mensagem (ajuste o caminho se necessário)
 const User = require('./models/userModel'); // Adjusted to match the actual filename if needed
+const path = require('path'); // Add path module
 
 dotenv.config(); // Carregar variáveis de ambiente do arquivo .env
 
@@ -27,6 +28,9 @@ const port = process.env.PORT || 3000;
 // Middlewares
 app.use(bodyParser.json());
 app.use(cors()); // Adicione o middleware CORS se necessário
+
+// Add static file serving for uploads directory
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Rotas
 app.use('/api/users', userRoutes); // Prefixo para todas as rotas de usuário
