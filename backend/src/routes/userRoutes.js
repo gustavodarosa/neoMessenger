@@ -220,4 +220,40 @@ router.put('/bio', auth, async (req, res) => {
   }
 });
 
+// Route to update user status
+router.put('/status', auth, async (req, res) => {
+  try {
+    const { status } = req.body;
+    
+    if (!status) {
+      return res.status(400).json({ error: 'Status is required' });
+    }
+    
+    // Validate status value
+    const validStatuses = ['online', 'ausente', 'ocupado', 'invisivel'];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ error: 'Invalid status value' });
+    }
+    
+    // Find user by ID and update status
+    const user = await User.findById(req.user._id);
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    // Update status
+    user.status = status;
+    await user.save();
+    
+    res.status(200).json({ 
+      message: 'Status updated successfully',
+      status: user.status
+    });
+  } catch (error) {
+    console.error('Error updating status:', error);
+    res.status(500).json({ error: 'Error updating status' });
+  }
+});
+
 module.exports = router;

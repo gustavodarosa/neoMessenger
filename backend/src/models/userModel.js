@@ -5,7 +5,8 @@ const userSchema = new mongoose.Schema({
   email:    { type: String, required: true, unique: true },
   password: { type: String, required: true },
   bio:      { type: String, default: "" },
-  avatar:   { type: String, default: "/assets/avatar.png" } // Default avatar path
+  status:   { type: String, enum: ['online', 'ausente', 'ocupado', 'invisivel'], default: 'online' },
+  avatar:   { type: String, default: "/assets/avatar.png" }
 });
 
 module.exports = mongoose.model('User', userSchema);

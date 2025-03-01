@@ -35,14 +35,32 @@
       box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     }
     
-    /* Fix for avatar border white background issue */
+    /* Fix for avatar border white background issue - now with solid border instead of box-shadow */
     .avatar-border {
       margin-right: 10px; /* Keep existing margin */
       padding: 0; /* Remove padding that creates white space */
       border-radius: 8px; /* Match the avatar border radius */
       overflow: hidden; /* Ensure content doesn't overflow */
       position: relative; /* For proper positioning */
-      box-shadow: 0 0 0 3px rgba(var(--online-color), 0.7); /* Colored border as box-shadow */
+      border: 3px solid rgba(var(--online-color), 1); /* Solid border instead of box-shadow */
+      box-shadow: none; /* Remove any box-shadow */
+    }
+    
+    /* Border colors for different statuses */
+    .avatar-border.online {
+      border-color: rgba(var(--online-color), 1);
+    }
+    
+    .avatar-border.ausente {
+      border-color: rgba(var(--ausente-color), 1);
+    }
+    
+    .avatar-border.ocupado {
+      border-color: rgba(var(--ocupado-color), 1);
+    }
+    
+    .avatar-border.invisivel {
+      border-color: rgba(var(--invisivel-color), 1);
     }
     
     /* Override para o avatar para não ficar circular e forçar a forma quadrada */
@@ -190,6 +208,57 @@
       resize: none;
       outline: none;
     }
+    
+    /* Styles for status dropdown */
+    .status-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .status-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    
+    .status-indicator.online {
+      background-color: rgba(var(--online-color), 1);
+    }
+    
+    .status-indicator.ausente {
+      background-color: rgba(var(--ausente-color), 1);
+    }
+    
+    .status-indicator.ocupado {
+      background-color: rgba(var(--ocupado-color), 1);
+    }
+    
+    .status-indicator.invisivel {
+      background-color: rgba(var(--invisivel-color), 1);
+    }
+    
+    .status-select {
+      appearance: none;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 14px;
+      padding: 0;
+      margin: 0;
+      outline: none;
+    }
+    
+    .status-select:hover {
+      text-decoration: underline;
+    }
+    
+    .status-select option {
+      background-color: #f5f5f5;
+      color: #333;
+    }
   </style>
 </head>
 <body>
@@ -209,7 +278,15 @@
               <i class="fas fa-pencil-alt"></i>
             </span>
           </div>
-          <p id="user-status">Status: Online</p>
+          <div class="status-container">
+            <div id="status-indicator" class="status-indicator online"></div>
+            <select id="user-status" class="status-select">
+              <option value="online">Status: Online</option>
+              <option value="ausente">Status: Ausente</option>
+              <option value="ocupado">Status: Ocupado</option>
+              <option value="invisivel">Status: Invisível</option>
+            </select>
+          </div>
         </div>
       </div>
       <div class="contacts-header" id="contacts-header">
@@ -712,11 +789,60 @@
       }
     }
     
-    // Call the setupAvatarUpload after fetching user info
+    // Add status changing functionality
+    function setupStatusSelector() {
+      const statusSelect = document.getElementById('user-status');
+      const statusIndicator = document.getElementById('status-indicator');
+      const avatarBorder = document.getElementById('avatar-container');
+      
+      // Initialize status from user data or localStorage
+      const savedStatus = localStorage.getItem('userStatus') || 'online';
+      statusSelect.value = savedStatus;
+      updateStatusVisuals(savedStatus);
+      
+      // Handle status changes
+      statusSelect.addEventListener('change', async function() {
+        const newStatus = this.value;
+        updateStatusVisuals(newStatus);
+        
+        // Save to localStorage
+        localStorage.setItem('userStatus', newStatus);
+        
+        // Optionally save to backend
+        try {
+          const token = localStorage.getItem('token');
+          const response = await fetch('http://localhost:3000/api/users/status', {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ status: newStatus })
+          });
+          
+          if (!response.ok) {
+            console.error('Failed to save status to server');
+          }
+        } catch (error) {
+          console.error('Error saving status:', error);
+        }
+      });
+      
+      function updateStatusVisuals(status) {
+        // Update the indicator color
+        statusIndicator.className = 'status-indicator ' + status;
+        
+        // Update avatar border color
+        avatarBorder.className = 'avatar-border ' + status;
+      }
+    }
+    
+    // Call the setup functions after fetching user info
     fetchUserInfo()
       .then(() => {
         setupAvatarUpload();
         setupBioEditing();
+        setupStatusSelector();
         return fetchContacts();
       });
     // Ensure no extra closing curly bracket here!
