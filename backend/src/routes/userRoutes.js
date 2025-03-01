@@ -190,4 +190,34 @@ router.post('/avatar', auth, upload.single('avatar'), async (req, res) => {
   }
 });
 
+// Route to update user bio
+router.put('/bio', auth, async (req, res) => {
+  try {
+    const { bio } = req.body;
+    
+    if (bio === undefined) {
+      return res.status(400).json({ error: 'Bio content is required' });
+    }
+    
+    // Find user by ID and update bio
+    const user = await User.findById(req.user._id);
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    // Update bio
+    user.bio = bio;
+    await user.save();
+    
+    res.status(200).json({ 
+      message: 'Bio updated successfully',
+      bio: user.bio
+    });
+  } catch (error) {
+    console.error('Error updating bio:', error);
+    res.status(500).json({ error: 'Error updating bio' });
+  }
+});
+
 module.exports = router;

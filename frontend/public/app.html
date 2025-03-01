@@ -35,23 +35,34 @@
       box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     }
     
+    /* Fix for avatar border white background issue */
+    .avatar-border {
+      margin-right: 10px; /* Keep existing margin */
+      padding: 0; /* Remove padding that creates white space */
+      border-radius: 8px; /* Match the avatar border radius */
+      overflow: hidden; /* Ensure content doesn't overflow */
+      position: relative; /* For proper positioning */
+      box-shadow: 0 0 0 3px rgba(var(--online-color), 0.7); /* Colored border as box-shadow */
+    }
+    
     /* Override para o avatar para não ficar circular e forçar a forma quadrada */
     .user-header .avatar {
       border-radius: 8px; /* Altera de 50% para 8px */
       width: 80px; /* Largura fixa */
       height: 80px; /* Altura igual à largura para formar um quadrado */
       object-fit: cover; /* Garante que a imagem cubra todo o espaço sem distorção */
+      display: block; /* Remove default inline spacing */
+      border: none; /* Remove any default borders */
+      background: transparent; /* Remove any background color */
+      padding: 0; /* Remove padding */
     }
 
     .user-header {
       display: flex;
       align-items: center;
     }
-    .avatar-border {
-      margin-right: 10px; /* Espaço entre avatar e user-info */
-    }
 
-    /* Reset margins for user-info children and set uniform gap */
+    /* Reset margins for user-info children and reduce spacing between items */
     .user-info h2,
     .user-info p {
       margin: 0;
@@ -59,7 +70,25 @@
     .user-info {
       display: flex;
       flex-direction: column;
-      gap: 10px; /* Adjust gap as needed for consistent spacing */
+      gap: 5px; /* Reduced from 10px to 5px for tighter spacing */
+    }
+
+    /* Make bio container inherit tighter spacing */
+    .bio-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      padding: 1px 0; /* Remove horizontal padding */
+      border-radius: 4px;
+      transition: background-color 0.2s;
+      width: 100%; /* Ensure full width */
+    }
+
+    #user-bio {
+      margin: 0; /* Reset any default margins */
+      padding: 0; /* Reset any default padding */
+      width: 100%; /* Take full width of container */
+      text-align: left; /* Ensure left alignment */
     }
 
     .contacts-header {
@@ -110,6 +139,57 @@
     .contact-item:hover {
       background-color: #e0e0e0;
     }
+    
+    /* Styles for editable bio */
+    .bio-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      padding: 1px 0; /* Remove horizontal padding */
+      border-radius: 4px;
+      transition: background-color 0.2s;
+      width: 100%; /* Ensure full width */
+    }
+    
+    #user-bio {
+      margin: 0; /* Reset any default margins */
+      padding: 0; /* Reset any default padding */
+      width: 100%; /* Take full width of container */
+      text-align: left; /* Ensure left alignment */
+    }
+    
+    .bio-container:hover {
+      background-color: rgba(0, 0, 0, 0.04);
+    }
+    
+    .bio-edit-icon {
+      cursor: pointer;
+      opacity: 0;
+      font-size: 14px;
+      margin-left: 5px;
+      transition: opacity 0.2s;
+      flex-shrink: 0; /* Prevent icon from shrinking */
+    }
+    
+    .bio-container:hover .bio-edit-icon {
+      opacity: 0.7;
+    }
+    
+    .bio-edit-icon:hover {
+      opacity: 1;
+    }
+    
+    #bio-edit-input {
+      width: 100%;
+      min-height: 24px;
+      padding: 3px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: inherit;
+      resize: none;
+      outline: none;
+    }
   </style>
 </head>
 <body>
@@ -123,7 +203,12 @@
         </div>
         <div class="user-info">
           <h2 id="user-name"></h2>
-          <p id="user-bio">Bio do usuário</p>
+          <div class="bio-container">
+            <p id="user-bio">Bio do usuário</p>
+            <span class="bio-edit-icon" title="Edit bio">
+              <i class="fas fa-pencil-alt"></i>
+            </span>
+          </div>
           <p id="user-status">Status: Online</p>
         </div>
       </div>
@@ -527,10 +612,111 @@
       });
     }
     
+    // Updated bio editing functionality
+    function setupBioEditing() {
+      const bioContainer = document.querySelector('.bio-container');
+      const bioText = document.getElementById('user-bio');
+      const bioEditIcon = document.querySelector('.bio-edit-icon');
+      let originalBio = bioText.textContent;
+      
+      // When edit icon is clicked, replace text with editable input
+      bioEditIcon.addEventListener('click', () => {
+        originalBio = bioText.textContent; // Store current text
+        
+        // Hide text and icon
+        bioText.style.display = 'none';
+        bioEditIcon.style.display = 'none';
+        
+        // Create input element
+        const textArea = document.createElement('textarea');
+        textArea.id = 'bio-edit-input';
+        textArea.value = originalBio;
+        bioContainer.appendChild(textArea);
+        textArea.focus();
+        
+        // Auto-resize textarea to fit content
+        textArea.style.height = 'auto';
+        textArea.style.height = textArea.scrollHeight + 'px';
+        
+        // Handle Enter key (save) and Escape key (cancel)
+        textArea.addEventListener('keydown', async (e) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            await saveBio(textArea.value);
+          } else if (e.key === 'Escape') {
+            cancelEdit();
+          }
+        });
+        
+        // Handle blur (clicking outside)
+        textArea.addEventListener('blur', async () => {
+          const newBio = textArea.value.trim();
+          
+          // Only save if content changed
+          if (newBio !== originalBio) {
+            await saveBio(newBio);
+          } else {
+            cancelEdit();
+          }
+        });
+        
+        // When user types, auto-resize the textarea
+        textArea.addEventListener('input', () => {
+          textArea.style.height = 'auto';
+          textArea.style.height = textArea.scrollHeight + 'px';
+        });
+      });
+      
+      async function saveBio(newBio) {
+        try {
+          const token = localStorage.getItem('token');
+          const response = await fetch('http://localhost:3000/api/users/bio', {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ bio: newBio })
+          });
+          
+          if (!response.ok) {
+            throw new Error('Failed to update bio');
+          }
+          
+          // Update UI with new bio
+          bioText.textContent = newBio;
+          completeEdit();
+        } catch (error) {
+          console.error('Error updating bio:', error);
+          // Revert to original if save failed
+          bioText.textContent = originalBio;
+          completeEdit();
+        }
+      }
+      
+      function cancelEdit() {
+        // Revert to original state
+        completeEdit();
+      }
+      
+      function completeEdit() {
+        // Remove textarea
+        const textArea = document.getElementById('bio-edit-input');
+        if (textArea) {
+          textArea.remove();
+        }
+        
+        // Show text and edit icon again
+        bioText.style.display = 'block';
+        bioEditIcon.style.display = 'inline';
+      }
+    }
+    
     // Call the setupAvatarUpload after fetching user info
     fetchUserInfo()
       .then(() => {
         setupAvatarUpload();
+        setupBioEditing();
         return fetchContacts();
       });
     // Ensure no extra closing curly bracket here!
