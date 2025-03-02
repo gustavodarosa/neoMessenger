@@ -497,8 +497,10 @@
         }
         
         console.log("User from DB (id igual ao token):", user);
+        return user; // Return user object for chaining
       } catch (error) {
         console.error("Erro ao buscar informações do usuário:", error);
+        return null;
       }
     }
 
@@ -1050,14 +1052,149 @@
     
     // Call the setup functions after fetching user info
     fetchUserInfo()
-      .then(() => {
+      .then((user) => {
+        if (user && currentUserId) {
+          console.log("%c User authenticated:", "color: green", {
+            id: currentUserId,
+            name: currentUserName
+          });
+          
+          // Set up socket connection and join personal room
+          return setupSocketConnection();
+        }
+      })
+      .then((socketConnected) => {
+        // Continue with other initializations
         setupAvatarUpload();
         setupBioEditing();
         setupStatusSelector();
-        setupSoundToggle(); // Add this line
+        
+        // Log whether socket connection was successful
+        if (socketConnected) {
+          console.log("%c Socket setup complete", "color: green");
+        } else {
+          console.warn("%c Socket setup failed or was not completed", "color: orange");
+        }
+        
         return fetchContacts();
+      })
+      .catch((error) => {
+        console.error("Error during initialization:", error);
       });
     // Ensure no extra closing curly bracket here!
+
+    // Add this after the fetchUserInfo function to set up socket connection and join personal room
+    async function setupSocketConnection() {
+      try {
+        // Ensure we have the user ID first
+        if (!currentUserId) {
+          console.error("Cannot set up socket connection: No user ID available");
+          return;
+        }
+        
+        console.log("%c Setting up socket connection for user", "color: blue; font-weight: bold", currentUserId);
+        
+        // Initialize Socket.io connection
+        if (!window.socket) {
+          window.socket = io('http://localhost:3000');
+          
+          // Handle connect event
+          window.socket.on('connect', () => {
+            console.log("%c Socket connected with ID:", "color: green", window.socket.id);
+            
+            // Join personal room using user's own ID
+            const personalRoom = `user:${currentUserId}`;
+            console.log("%c Joining personal room:", "color: purple; font-weight: bold", personalRoom);
+            
+            window.socket.emit('joinPersonalRoom', currentUserId);
+          });
+          
+          // Handle successful room join
+          window.socket.on('roomJoined', (data) => {
+            console.log("%c Successfully joined room:", "color: green; font-weight: bold", data);
+          });
+          
+          // Handle errors
+          window.socket.on('error', (error) => {
+            console.error("Socket error:", error);
+          });
+          
+          // Handle socket disconnection
+          window.socket.on('disconnect', () => {
+            console.log("%c Socket disconnected", "color: orange");
+          });
+          
+          // Handle personal messages (notifications)
+          window.socket.on('personalMessage', (message) => {
+            console.log("%c Personal message received in personal room:", "color: blue; font-weight: bold", message);
+            
+            // Play notification sound if available
+            if (typeof playNotificationSound === 'function') {
+              playNotificationSound();
+            }
+            
+            // Show desktop notification
+            if (Notification.permission === "granted") {
+              const notification = new Notification("New Message", {
+                body: `${message.senderName}: ${message.text}`,
+                icon: "../assets/avatar.png"
+              });
+              
+              notification.onclick = () => {
+                window.focus();
+                // Open chat with sender if possible
+                const senderContact = document.querySelector(`.contact-item[data-contact-id="${message.sender}"]`);
+                if (senderContact) {
+                  senderContact.click();
+                }
+              };
+            }
+            
+            // If ContactManager exists, notify it
+            if (window.ContactManager && typeof window.ContactManager.highlightContact === 'function') {
+              window.ContactManager.highlightContact(message.sender);
+            }
+          });
+        }
+        
+        return true;
+      } catch (error) {
+        console.error("Error setting up socket connection:", error);
+        return false;
+      }
+    }
+
+    // Add a function to verify if the user is in their personal room
+    function verifyPersonalRoom() {
+      if (!window.socket || !currentUserId) {
+        console.error("Cannot verify personal room: Socket or user ID not available");
+        return;
+      }
+      
+      console.log("%c Verifying personal room membership for user:", "color: orange", currentUserId);
+      window.socket.emit('verifyRoom', currentUserId);
+      
+      window.socket.once('roomVerification', (data) => {
+        console.log("%c Room verification result:", "color: orange", data);
+        
+        if (!data.inRoom) {
+          console.warn("%c User is not in personal room, rejoining...", "color: orange");
+          window.socket.emit('joinPersonalRoom', currentUserId);
+        } else {
+          console.log("%c User is in personal room", "color: green");
+        }
+      });
+    }
+    
+    // Make it available globally for debugging
+    window.verifyPersonalRoom = verifyPersonalRoom;
+    
+    // Check personal room membership after 5 seconds (to allow other initialization to complete)
+    setTimeout(() => {
+      if (currentUserId) {
+        verifyPersonalRoom();
+      }
+    }, 5000);
   </script>
 </body>
 </html>

@@ -52,17 +52,60 @@ mongoose.connect(process.env.MONGODB_URI, {
 io.on('connection', (socket) => {
   console.log('🔌 Novo cliente conectado:', socket.id);
 
+  // Add handler for personal room joining
+  socket.on('joinPersonalRoom', (userId) => {
+    if (!userId) {
+      console.error("Cannot join personal room: No user ID provided");
+      socket.emit('error', { message: 'Missing user ID' });
+      return;
+    }
+    
+    // Create personal room ID with prefix for clarity
+    const personalRoom = `user:${userId}`;
+    
+    // Join the room
+    socket.join(personalRoom);
+    console.log(`🔌 User ${userId} joined personal room ${personalRoom}`);
+    
+    // Notify client they've joined successfully
+    socket.emit('roomJoined', {
+      room: personalRoom,
+      userId: userId,
+      timestamp: new Date(),
+      success: true
+    });
+  });
+  
+  // Add handler for room verification
+  socket.on('verifyRoom', (userId) => {
+    const personalRoomId = `user:${userId}`;
+    const socketRooms = Array.from(socket.rooms || []);
+    const isInRoom = socketRooms.includes(personalRoomId);
+    
+    console.log(`🔍 Room verification for user ${userId}: ${isInRoom ? 'IN' : 'NOT IN'} room ${personalRoomId}`);
+    
+    socket.emit('roomVerification', {
+      inRoom: isInRoom,
+      userId: userId,
+      room: personalRoomId,
+      allRooms: socketRooms
+    });
+  });
+
+  // Existing joinRoom handler
   socket.on('joinRoom', (room) => {
     socket.join(room);
     console.log(`🔌 Cliente ${socket.id} entrou na sala ${room}`);
   });
 
+  // Modified sendMessage handler to also notify personal room if recipient isn't in the chat room
   socket.on('sendMessage', async (message) => {
     try {
       const user = await User.findById(message.sender);
       if (!user) {
         throw new Error('Sender not found');
       }
+      
       const newMessage = new Message({
         sender: user._id,
         senderName: user.name || user.username || 'Unknown User',
@@ -70,12 +113,30 @@ io.on('connection', (socket) => {
         text: message.text,
         timestamp: new Date()
       });
+      
       await newMessage.save();
       newMessage.room = message.room; // Ensure that room information is attached
+      
       console.log("Broadcasting message to room:", message.room);
       io.to(message.room).emit('receiveMessage', newMessage);
+      
+      // Also send to recipient's personal room for notification if they're not in the chat room
+      const recipientRoom = `user:${message.recipient}`;
+      const recipientSockets = await io.in(message.room).fetchSockets();
+      const recipientIsInRoom = recipientSockets.some(s => 
+        Array.from(s.rooms).includes(recipientRoom) && Array.from(s.rooms).includes(message.room)
+      );
+      
+      if (!recipientIsInRoom) {
+        console.log(`Sending notification to personal room: ${recipientRoom}`);
+        io.to(recipientRoom).emit('personalMessage', {
+          ...newMessage.toObject(),
+          isNotification: true
+        });
+      }
     } catch (error) {
       console.error('Erro ao salvar mensagem:', error);
+      socket.emit('error', { message: 'Error saving or sending message' });
     }
   });
 
