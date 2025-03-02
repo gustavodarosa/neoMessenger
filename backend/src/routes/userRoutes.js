@@ -101,4 +101,56 @@ router.post('/messages', auth, async (req, res) => {
   res.status(201).json(message);
 });
 
+/**
+ * Add this route to your user routes to fetch avatars by user ID
+ */
+// Get user avatar by userId
+router.get('/avatar/:userId', async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    
+    // Fetch the user by ID
+    const user = await User.findById(userId);
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    // Check if user has an avatar
+    if (user.avatar) {
+      // Return the avatar path
+      return res.status(200).json({ avatarUrl: user.avatar });
+    } else {
+      // Return default avatar path
+      return res.status(200).json({ avatarUrl: '/assets/default-avatar.png' });
+    }
+  } catch (error) {
+    console.error('Error fetching user avatar:', error);
+    return res.status(500).json({ error: 'Failed to fetch avatar' });
+  }
+});
+
+/**
+ * Add this route to get a user by ID
+ */
+// Get user info by ID (for contact details)
+router.get('/:userId', auth, async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    
+    // Find user by ID but exclude the password field
+    const user = await User.findById(userId).select('-password');
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    // Return the user info (without password)
+    res.status(200).json(user);
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    return res.status(500).json({ error: 'Failed to fetch user' });
+  }
+});
+
 module.exports = router;
