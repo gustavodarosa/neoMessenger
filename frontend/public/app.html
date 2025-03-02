@@ -323,72 +323,6 @@
       display: none;
     }
 
-    /* Sound toggle switch styling */
-    .sound-toggle {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 10px;
-      font-size: 14px;
-    }
-    
-    .sound-toggle label {
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-    }
-    
-    .sound-toggle input {
-      height: 0;
-      width: 0;
-      visibility: hidden;
-    }
-    
-    .sound-switch {
-      position: relative;
-      display: inline-block;
-      width: 40px;
-      height: 20px;
-    }
-    
-    .sound-switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-    
-    .sound-slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: #ccc;
-      transition: .4s;
-      border-radius: 20px;
-    }
-    
-    .sound-slider:before {
-      position: absolute;
-      content: "";
-      height: 16px;
-      width: 16px;
-      left: 2px;
-      bottom: 2px;
-      background-color: white;
-      transition: .4s;
-      border-radius: 50%;
-    }
-    
-    input:checked + .sound-slider {
-      background-color: var(--primary-color);
-    }
-    
-    input:checked + .sound-slider:before {
-      transform: translateX(20px);
-    }
-    
     /* Visual notification for new message */
     @keyframes notification-flash {
       0% { background-color: transparent; }
@@ -427,13 +361,6 @@
               <option value="invisivel">Status: Invisível</option>
             </select>
           </div>
-          <div class="sound-toggle">
-            <label class="sound-switch">
-              <input type="checkbox" id="sound-enabled" checked>
-              <span class="sound-slider"></span>
-            </label>
-            <span>Sound notifications</span>
-          </div>
         </div>
       </div>
       <div class="contacts-header" id="contacts-header">
@@ -450,8 +377,6 @@
       <ul id="contact-lissst">
         <!-- Contatos serão inseridos aqui -->
       </ul>
-      <!-- Remove the "Logout" button -->
-      <!-- <button id="logout-button">Logout</button> -->
     </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
@@ -968,6 +893,13 @@
         const newStatus = this.value;
         updateStatusVisuals(newStatus);
         
+        // Log sound notification status based on new status
+        if (newStatus === 'ocupado') {
+          console.log("%c Sound notifications disabled - status: ocupado", "color: orange");
+        } else {
+          console.log("%c Sound notifications enabled", "color: green");
+        }
+        
         // Save to localStorage
         localStorage.setItem('userStatus', newStatus);
         
@@ -1002,44 +934,19 @@
     
     // Create audio objects for notifications
     const messageSound = new Audio('audio/message.mp3'); // Path to your sound file in public/audio directory
-    let soundEnabled = localStorage.getItem('soundEnabled') !== 'false'; // Default is true
-    
-    // Initialize sound toggle based on stored preference
-    function setupSoundToggle() {
-      const soundToggle = document.getElementById('sound-enabled');
-      soundToggle.checked = soundEnabled;
-      
-      soundToggle.addEventListener('change', function() {
-        soundEnabled = this.checked;
-        localStorage.setItem('soundEnabled', soundEnabled);
-        
-        // Play a test sound when enabling
-        if (soundEnabled) {
-          // Try to play a sound to overcome browser restrictions
-          const promise = messageSound.play();
-          
-          if (promise !== undefined) {
-            promise.then(() => {
-              // Sound played successfully
-              messageSound.currentTime = 0;
-            }).catch(error => {
-              console.log('Audio playback was not allowed:', error);
-              // Let user know they need to interact with the page first
-              alert('Please click somewhere on the page to enable sound notifications.');
-            });
-          }
-        }
-      });
-    }
     
     // Function to play notification sound
     function playNotificationSound(message) {
-      if (!soundEnabled) return;
+      // Get current user status
+      const userStatus = document.getElementById('user-status').value;
       
-      // Since this is now only for personal notifications, we can simplify
-      // No need to check if room is open since this will only be called for personal messages
+      // Only mute sound if user is in "ocupado" (busy) status
+      if (userStatus === 'ocupado') {
+        console.log(`🔇 Sound muted: user is in "ocupado" status`);
+        return;
+      }
       
-      console.log(`🔊 Playing notification sound for personal message from ${message.senderName || 'Unknown'}`);
+      console.log(`🔊 Playing notification sound for message from ${message.senderName || 'Unknown'}`);
       
       // Clone the audio to allow multiple sounds to play simultaneously
       const soundClone = messageSound.cloneNode();
@@ -1068,9 +975,6 @@
         }
       })
       .then((socketConnected) => {
-        // Sound toggle control setup
-        setupSoundToggle();
-        
         // Continue with other initializations
         setupAvatarUpload();
         setupBioEditing();
@@ -1088,8 +992,7 @@
       .catch((error) => {
         console.error("Error during initialization:", error);
       });
-    // Ensure no extra closing curly bracket here!
-
+    
     // Add this after the fetchUserInfo function to set up socket connection and join personal room
     async function setupSocketConnection() {
       try {
@@ -1160,7 +1063,7 @@
         playNotificationSound(message);
         
         // Rest of personal message handling code...
-        // Show desktop notification
+        // Show desktop notifications
         if (Notification.permission === "granted") {
           const notification = new Notification("New Message", {
             body: `${message.senderName}: ${message.text}`,
@@ -1186,10 +1089,6 @@
     
     // Setup sound system specifically
     function setupSoundSystem() {
-      // Initialize sound notification settings
-      soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
-      console.log(`Sound notifications are ${soundEnabled ? 'enabled' : 'disabled'}`);
-      
       // Ensure message sound is loaded
       messageSound.addEventListener('canplaythrough', () => {
         console.log("%c Sound file loaded successfully", "color: green");
