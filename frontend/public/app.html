@@ -1063,17 +1063,20 @@
             name: currentUserName
           });
           
-          // Set up socket connection and join personal room
+          // Set up socket connection first thing after user authentication
           return setupSocketConnection();
         }
       })
       .then((socketConnected) => {
+        // Sound toggle control setup
+        setupSoundToggle();
+        
         // Continue with other initializations
         setupAvatarUpload();
         setupBioEditing();
         setupStatusSelector();
         
-        // Log whether socket connection was successful
+        // Log socket setup status
         if (socketConnected) {
           console.log("%c Socket setup complete", "color: green");
         } else {
@@ -1102,63 +1105,22 @@
         if (!window.socket) {
           window.socket = io('http://localhost:3000');
           
-          // Handle connect event
+          // Handle connect event - moved to top of function
           window.socket.on('connect', () => {
             console.log("%c Socket connected with ID:", "color: green", window.socket.id);
             
-            // Join personal room using user's own ID
+            // Join personal room using user's own ID - immediately after connection
             const personalRoom = `user:${currentUserId}`;
             console.log("%c Joining personal room:", "color: purple; font-weight: bold", personalRoom);
             
             window.socket.emit('joinPersonalRoom', currentUserId);
-          });
-          
-          // Handle successful room join
-          window.socket.on('roomJoined', (data) => {
-            console.log("%c Successfully joined room:", "color: green; font-weight: bold", data);
-          });
-          
-          // Handle errors
-          window.socket.on('error', (error) => {
-            console.error("Socket error:", error);
-          });
-          
-          // Handle socket disconnection
-          window.socket.on('disconnect', () => {
-            console.log("%c Socket disconnected", "color: orange");
-          });
-          
-          // Handle personal messages (notifications)
-          window.socket.on('personalMessage', (message) => {
-            console.log("%c Personal message received in personal room:", "color: blue; font-weight: bold", message);
             
-            // Keep this sound notification - it's for the personal room
-            if (typeof playNotificationSound === 'function') {
-              playNotificationSound(message);
-            }
-            
-            // Show desktop notification
-            if (Notification.permission === "granted") {
-              const notification = new Notification("New Message", {
-                body: `${message.senderName}: ${message.text}`,
-                icon: "../assets/avatar.png"
-              });
-              
-              notification.onclick = () => {
-                window.focus();
-                // Open chat with sender if possible
-                const senderContact = document.querySelector(`.contact-item[data-contact-id="${message.sender}"]`);
-                if (senderContact) {
-                  senderContact.click();
-                }
-              };
-            }
-            
-            // If ContactManager exists, notify it
-            if (window.ContactManager && typeof window.ContactManager.highlightContact === 'function') {
-              window.ContactManager.highlightContact(message.sender);
-            }
+            // Initialize sound system right after joining room
+            setupSoundSystem();
           });
+          
+          // Move event handlers setup here - before room verification
+          setupSocketEventHandlers();
         }
         
         return true;
@@ -1167,7 +1129,76 @@
         return false;
       }
     }
-
+    
+    // Separate function to set up socket event handlers
+    function setupSocketEventHandlers() {
+      if (!window.socket) return;
+      
+      // Handle successful room join
+      window.socket.on('roomJoined', (data) => {
+        console.log("%c Successfully joined room:", "color: green; font-weight: bold", data);
+        
+        // Sound system is ready after room join confirmation
+        console.log("%c Sound notification system is active", "color: green");
+      });
+      
+      // Handle errors
+      window.socket.on('error', (error) => {
+        console.error("Socket error:", error);
+      });
+      
+      // Handle socket disconnection
+      window.socket.on('disconnect', () => {
+        console.log("%c Socket disconnected", "color: orange");
+      });
+      
+      // Handle personal messages (notifications)
+      window.socket.on('personalMessage', (message) => {
+        console.log("%c Personal message received in personal room:", "color: blue; font-weight: bold", message);
+        
+        // Play notification sound
+        playNotificationSound(message);
+        
+        // Rest of personal message handling code...
+        // Show desktop notification
+        if (Notification.permission === "granted") {
+          const notification = new Notification("New Message", {
+            body: `${message.senderName}: ${message.text}`,
+            icon: "../assets/avatar.png"
+          });
+          
+          notification.onclick = () => {
+            window.focus();
+            // Open chat with sender if possible
+            const senderContact = document.querySelector(`.contact-item[data-contact-id="${message.sender}"]`);
+            if (senderContact) {
+              senderContact.click();
+            }
+          };
+        }
+        
+        // If ContactManager exists, notify it
+        if (window.ContactManager && typeof window.ContactManager.highlightContact === 'function') {
+          window.ContactManager.highlightContact(message.sender);
+        }
+      });
+    }
+    
+    // Setup sound system specifically
+    function setupSoundSystem() {
+      // Initialize sound notification settings
+      soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
+      console.log(`Sound notifications are ${soundEnabled ? 'enabled' : 'disabled'}`);
+      
+      // Ensure message sound is loaded
+      messageSound.addEventListener('canplaythrough', () => {
+        console.log("%c Sound file loaded successfully", "color: green");
+      });
+      
+      // Preload the sound
+      messageSound.load();
+    }
+    
     // Add a function to verify if the user is in their personal room
     function verifyPersonalRoom() {
       if (!window.socket || !currentUserId) {
