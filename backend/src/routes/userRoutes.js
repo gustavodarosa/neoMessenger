@@ -4,45 +4,6 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 const auth = require('../middlewares/auth');
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
-
-// Configure multer for avatar uploads
-const avatarStorage = multer.diskStorage({
-  destination: function(req, file, cb) {
-    const uploadDir = path.join(__dirname, '../../uploads/avatars');
-    // Create directory if it doesn't exist
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-    cb(null, uploadDir);
-  },
-  filename: function(req, file, cb) {
-    // Use user ID and timestamp to make filename unique
-    const userId = req.user._id;
-    const timestamp = Date.now();
-    const ext = path.extname(file.originalname);
-    cb(null, `${userId}-${timestamp}${ext}`);
-  }
-});
-
-// Configure file filter to accept only jpeg and png
-const fileFilter = (req, file, cb) => {
-  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
-    cb(null, true);
-  } else {
-    cb(new Error('Only JPEG and PNG files are allowed'), false);
-  }
-};
-
-const upload = multer({ 
-  storage: avatarStorage, 
-  fileFilter: fileFilter,
-  limits: {
-    fileSize: 1024 * 1024 * 2 // Limit file size to 2MB
-  }
-});
 
 // Rota POST para registro
 router.post('/register', async (req, res) => {
@@ -112,20 +73,6 @@ router.get('/me', auth, async (req, res) => {
   }
 });
 
-// Add this new route to get all users
-router.get('/all', auth, async (req, res) => {
-  try {
-    // Get all users from the database, excluding password fields
-    const users = await User.find({}, { password: 0 });
-    
-    // Return the users as JSON
-    res.json(users);
-  } catch (error) {
-    console.error('Error fetching all users:', error);
-    res.status(500).json({ error: 'Failed to fetch users' });
-  }
-});
-
 // Exemplo de rota para obter contatos
 router.get('api/contacts', auth, async (req, res) => {
   const contacts = await Contact.find({ userId: req.user.id });
@@ -152,108 +99,6 @@ router.post('/messages', auth, async (req, res) => {
   });
   await message.save();
   res.status(201).json(message);
-});
-
-// Route to upload avatar
-router.post('/avatar', auth, upload.single('avatar'), async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'No file uploaded' });
-    }
-
-    // Get the user from database
-    const user = await User.findById(req.user._id);
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    // Get the relative path to the file
-    const relativePath = path.relative(
-      path.join(__dirname, '../../'), 
-      req.file.path
-    ).replace(/\\/g, '/');
-    
-    // Create a URL that can be accessed from frontend
-    const avatarUrl = `/uploads/avatars/${path.basename(req.file.path)}`;
-
-    // Update user's avatar field in database
-    user.avatar = avatarUrl;
-    await user.save();
-
-    res.status(200).json({ 
-      message: 'Avatar uploaded successfully',
-      avatarUrl: avatarUrl 
-    });
-  } catch (error) {
-    console.error('Error uploading avatar:', error);
-    res.status(500).json({ error: 'Error uploading avatar' });
-  }
-});
-
-// Route to update user bio
-router.put('/bio', auth, async (req, res) => {
-  try {
-    const { bio } = req.body;
-    
-    if (bio === undefined) {
-      return res.status(400).json({ error: 'Bio content is required' });
-    }
-    
-    // Find user by ID and update bio
-    const user = await User.findById(req.user._id);
-    
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-    
-    // Update bio
-    user.bio = bio;
-    await user.save();
-    
-    res.status(200).json({ 
-      message: 'Bio updated successfully',
-      bio: user.bio
-    });
-  } catch (error) {
-    console.error('Error updating bio:', error);
-    res.status(500).json({ error: 'Error updating bio' });
-  }
-});
-
-// Route to update user status
-router.put('/status', auth, async (req, res) => {
-  try {
-    const { status } = req.body;
-    
-    if (!status) {
-      return res.status(400).json({ error: 'Status is required' });
-    }
-    
-    // Validate status value
-    const validStatuses = ['online', 'ausente', 'ocupado', 'invisivel'];
-    if (!validStatuses.includes(status)) {
-      return res.status(400).json({ error: 'Invalid status value' });
-    }
-    
-    // Find user by ID and update status
-    const user = await User.findById(req.user._id);
-    
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-    
-    // Update status
-    user.status = status;
-    await user.save();
-    
-    res.status(200).json({ 
-      message: 'Status updated successfully',
-      status: user.status
-    });
-  } catch (error) {
-    console.error('Error updating status:', error);
-    res.status(500).json({ error: 'Error updating status' });
-  }
 });
 
 module.exports = router;

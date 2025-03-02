@@ -695,11 +695,10 @@
       socket.on('receiveMessage', (message) => {
         console.log("Real-time message received:", message);
         
-        // Only play sound if the message is from someone else
+        // Only add visual notification if the message is from someone else and window is not focused
         if (message.sender !== currentUserId) {
-          playNotificationSound();
-          
-          // Add visual notification if window is not focused
+          // REMOVED sound notification from here
+          // Only add visual notification
           if (!chatWindow.document.hasFocus()) {
             header.classList.add('new-message');
             // Remove the class after animation completes
@@ -1034,8 +1033,13 @@
     }
     
     // Function to play notification sound
-    function playNotificationSound() {
+    function playNotificationSound(message) {
       if (!soundEnabled) return;
+      
+      // Since this is now only for personal notifications, we can simplify
+      // No need to check if room is open since this will only be called for personal messages
+      
+      console.log(`🔊 Playing notification sound for personal message from ${message.senderName || 'Unknown'}`);
       
       // Clone the audio to allow multiple sounds to play simultaneously
       const soundClone = messageSound.cloneNode();
@@ -1128,9 +1132,9 @@
           window.socket.on('personalMessage', (message) => {
             console.log("%c Personal message received in personal room:", "color: blue; font-weight: bold", message);
             
-            // Play notification sound if available
+            // Keep this sound notification - it's for the personal room
             if (typeof playNotificationSound === 'function') {
-              playNotificationSound();
+              playNotificationSound(message);
             }
             
             // Show desktop notification
