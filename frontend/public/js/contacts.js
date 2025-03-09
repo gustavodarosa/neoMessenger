@@ -133,6 +133,22 @@ const ContactManager = (() => {
         nameSpan.classList.add('contact-name');
         nameSpan.textContent = displayName;
         
+        // Create status container
+        const statusContainer = document.createElement('div');
+        statusContainer.classList.add('status-container');
+        
+        // Create status text element
+        const statusText = document.createElement('span');
+        statusText.classList.add('status-text');
+        statusText.textContent = contact.status || 'online';
+        
+        // Apply status class to the text
+        if (contact.status) {
+          statusText.classList.add(contact.status);
+        } else {
+          statusText.classList.add('online'); // Default status
+        }
+        
         // Create status indicator
         const statusIndicator = document.createElement('div');
         statusIndicator.classList.add('contact-status');
@@ -144,10 +160,14 @@ const ContactManager = (() => {
           statusIndicator.classList.add('online'); // Default status
         }
         
+        // Add status elements to container
+        statusContainer.appendChild(statusText);
+        statusContainer.appendChild(statusIndicator);
+        
         // Add all elements to the list item
         li.appendChild(avatar);
         li.appendChild(nameSpan);
-        li.appendChild(statusIndicator);
+        li.appendChild(statusContainer);
         
         // Add click listener to open chat
         li.addEventListener('click', () => {
@@ -183,6 +203,12 @@ const ContactManager = (() => {
           nameSpan.textContent = contact.name || `Contact ID: ${contact.contactId.substr(-6)}`;
           avatar.src = createDefaultAvatar(nameSpan.textContent);
         }
+      }
+      // After rendering all contacts, request their current status
+      if (window.SocketManager && window.SocketManager.getSocket()) {
+        window.SocketManager.getSocket().emit('checkStatuses', { 
+          userIds: contacts.map(contact => contact.contactId) 
+        });
       }
     }
   };
@@ -224,24 +250,55 @@ const ContactManager = (() => {
         flex-grow: 1;
       }
       
+      .status-container {
+        display: flex;
+        align-items: center;
+        margin-left: 8px;
+      }
+      
+      .status-text {
+        font-size: 12px;
+        margin-right: 5px;
+        font-weight: 500;
+      }
+      
       .contact-status {
-        width: 8px;
-        height: 8px;
+        width: 10px;
+        height: 10px;
         border-radius: 50%;
-        margin-left: auto;
         background-color: #ccc;
+        box-shadow: 0 0 0 rgba(0,0,0,0);
+        transition: all 0.3s ease;
       }
       
-      .contact-status.online {
+      .status-text.online, .contact-status.online {
+        color: rgba(var(--online-color), 1);
         background-color: rgba(var(--online-color), 1);
+        box-shadow: 0 0 5px rgba(var(--online-color), 0.5);
       }
       
-      .contact-status.ausente {
+      .status-text.ausente, .contact-status.ausente {
+        color: rgba(var(--ausente-color), 1);
         background-color: rgba(var(--ausente-color), 1);
+        box-shadow: 0 0 5px rgba(var(--ausente-color), 0.5);
       }
       
-      .contact-status.ocupado {
+      .status-text.ocupado, .contact-status.ocupado {
+        color: rgba(var(--ocupado-color), 1);
         background-color: rgba(var(--ocupado-color), 1);
+        box-shadow: 0 0 5px rgba(var(--ocupado-color), 0.5);
+      }
+      
+      .status-text.invisivel, .contact-status.invisivel {
+        color: #808080;
+        background-color: #808080;
+        box-shadow: 0 0 5px rgba(128,128,128, 0.5);
+      }
+      
+      .status-text.offline, .contact-status.offline {
+        color: #bbbbbb;
+        background-color: #bbbbbb;
+        box-shadow: 0 0 0 rgba(187,187,187, 0);
       }
     `;
     document.head.appendChild(styleElement);
@@ -373,6 +430,38 @@ const ContactManager = (() => {
   const getContactById = (id) => {
     return contacts.find(contact => contact.contactId === id || contact._id === id) || null;
   };
+
+  /**
+   * Update the status of a contact
+   * @param {string} userId - The user ID of the contact
+   * @param {string} status - The new status
+   */
+  const updateContactStatus = (userId, status) => {
+    const contactItem = document.querySelector(`.contact-item[data-contact-id="${userId}"]`);
+    if (!contactItem) return;
+     
+    // Find status elements
+    const statusText = contactItem.querySelector('.status-text');
+    const statusIndicator = contactItem.querySelector('.contact-status');
+    if (!statusIndicator || !statusText) return;
+     
+    // Get current status for comparison
+    const currentStatus = statusIndicator.className.replace('contact-status', '').trim();
+    if (currentStatus !== status) {
+      console.log(`Status for user ${userId} changed from ${currentStatus} to ${status}`);
+      
+      // Remove all status classes
+      statusText.classList.remove('online', 'ausente', 'ocupado', 'invisivel', 'offline');
+      statusIndicator.classList.remove('online', 'ausente', 'ocupado', 'invisivel', 'offline');
+       
+      // Add new status class
+      statusText.classList.add(status);
+      statusIndicator.classList.add(status);
+      
+      // Update text content
+      statusText.textContent = status;
+    }
+  };
   
   // Public API
   return {
@@ -382,7 +471,9 @@ const ContactManager = (() => {
     getContactById,
     getContactInfo,
     highlightContact,
-    createDefaultAvatar
+    createDefaultAvatar,
+    updateContactStatus,
+    renderContacts
   };
 })();
 

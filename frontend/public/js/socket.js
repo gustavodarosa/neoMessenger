@@ -25,7 +25,11 @@ const SocketManager = (() => {
       
       // Initialize Socket.io connection
       if (!socket) {
-        socket = io('http://localhost:3000');
+        socket = io('http://localhost:3000', {
+          auth: {
+            token: localStorage.getItem('token')
+          }
+        });
         
         // Handle connect event
         socket.on('connect', () => {
@@ -39,11 +43,22 @@ const SocketManager = (() => {
           
           // Initialize sound system right after joining room
           setupSoundSystem();
+
+          // Emit user status after connection
+          socket.emit('updateStatus', { status: 'online' });
+        });
+
+        // Handle reconnect event
+        socket.on('reconnect', () => {
+          console.log("%c Socket reconnected", "color: green");
+          socket.emit('updateStatus', { status: 'online' });
         });
         
         // Set up event handlers
         setupSocketEventHandlers();
       }
+
+      
       
       return true;
     } catch (error) {
@@ -61,6 +76,24 @@ const SocketManager = (() => {
     // Handle successful room join
     socket.on('roomJoined', (data) => {
       console.log("%c Successfully joined room:", "color: green; font-weight: bold", data);
+
+      socket.on('statusUpdate', (data) => {
+        console.log("%c Status update received:", "color: purple", data);
+
+        if (window.ContactManager && typeof window.ContactManager.updateContactStatus === 'function') {
+          window.ContactManager.updateContactStatus(data.userId, data.status);
+        }
+      });
+
+      socket.on('statusUpdates', (data) => {
+        console.log("%c Multiple status updates received:", "color: purple", data);
+        
+        if (data.statuses && Array.isArray(data.statuses) && window.ContactManager) {
+          data.statuses.forEach(statusInfo => {
+            window.ContactManager.updateContactStatus(statusInfo.userId, statusInfo.status);
+          });
+        }
+      });
       
       // Sound system is ready after room join confirmation
       console.log("%c Sound notification system is active", "color: green");

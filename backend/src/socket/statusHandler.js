@@ -1,38 +1,30 @@
-// Simple status tracking
 const onlineUsers = new Map();
 
 function setupStatusHandlers(io, socket) {
-  // Handle status updates
   socket.on('updateStatus', (data) => {
-    if (!data.userId) return;
-    
-    // Save the status
     onlineUsers.set(data.userId, {
       status: data.status,
-      socketId: socket.id
+      socketId: socket.id,
+      lastSeen: new Date()
     });
-    
-    // Tell everyone about the status change
-    socket.broadcast.emit('statusUpdate', data);
+    io.emit('statusUpdate', { userId: data.userId, status: data.status });
   });
-  
-  // When someone disconnects
+
   socket.on('disconnect', () => {
-    // Find which user disconnected
-    for (const [userId, userData] of onlineUsers.entries()) {
-      if (userData.socketId === socket.id) {
-        // Remove them from online users
-        onlineUsers.delete(userId);
-        
-        // Tell everyone they're offline
-        io.emit('statusUpdate', {
-          userId,
-          status: 'offline'
-        });
-        break;
-      }
+    const user = Array.from(onlineUsers.entries()).find(([userId, info]) => info.socketId === socket.id);
+    if (user) {
+      onlineUsers.delete(user[0]);
+      io.emit('statusUpdate', { userId: user[0], status: 'offline' });
     }
+  });
+
+  socket.on('checkStatuses', (data) => {
+    const statuses = data.userIds.map(userId => ({
+      userId,
+      status: onlineUsers.get(userId)?.status || 'offline'
+    }));
+    socket.emit('statusUpdates', { statuses });
   });
 }
 
-module.exports = { setupStatusHandlers, onlineUsers };
+module.exports = { setupStatusHandlers };

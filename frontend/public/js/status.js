@@ -43,6 +43,14 @@ const StatusManager = (() => {
         
         // Save to backend
         await saveStatusToServer(newStatus);
+        
+        // Emit status update via socket
+        if (window.SocketManager && window.SocketManager.getSocket()) {
+          window.SocketManager.getSocket().emit('updateStatus', {
+            userId: window.ProfileManager.getCurrentUserId(),
+            status: newStatus
+          });
+        }
       });
       
       return true;
@@ -123,5 +131,5 @@ const StatusManager = (() => {
   };
 })();
 
-// Make StatusManager globally available
+// Make StatusManager globally available with specified methods
 window.StatusManager = StatusManager;
