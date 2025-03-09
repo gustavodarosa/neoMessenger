@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../middlewares/auth');
-const Contact = require('../models/contactModel'); // Ensure this model is defined
+const Contact = require('../models/Contact'); // Corrected import path
 
 // GET /contacts - Return contacts for the authenticated user
 router.get('/', auth, async (req, res) => {

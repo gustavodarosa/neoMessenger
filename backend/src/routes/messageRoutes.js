@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const authenticateToken = require('../middlewares/authenticateToken');
+const auth = require('../middlewares/auth');
+
 const Message = require('../models/Message');
 const User = require('../models/userModel'); // Adjusted the filename to match your file
 
 // POST /messages: Enviar mensagem com username baseado no token
-router.post('/', authenticateToken, async (req, res) => {
+router.post('/', auth, async (req, res) => {
   try {
     const { recipientId, text } = req.body;
     // Retrieve user info from the database using the token-derived ID
@@ -27,7 +28,7 @@ router.post('/', authenticateToken, async (req, res) => {
 });
 
 // GET /messages/:contactId: Receber mensagens
-router.get('/:contactId', authenticateToken, async (req, res) => {
+router.get('/:contactId', auth, async (req, res) => {
   try {
     const contactId = req.params.contactId;
     const messages = await Message.find({

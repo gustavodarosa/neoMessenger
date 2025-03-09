@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+
 const contactSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // Owner of the contact
   contactId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // The actual user ID this contact represents

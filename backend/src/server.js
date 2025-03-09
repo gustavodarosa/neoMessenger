@@ -13,6 +13,7 @@ const { Server } = require('socket.io');
 const Message = require('./models/Message'); // Importe o modelo de mensagem (ajuste o caminho se necessário)
 const User = require('./models/userModel'); // Adjusted to match the actual filename if needed
 const path = require('path'); // Add path module
+const { setupStatusHandlers } = require('./socket/statusHandler');
 
 dotenv.config(); // Carregar variáveis de ambiente do arquivo .env
 
@@ -39,18 +40,21 @@ app.use('/api/messages', messageRoutes);
 app.use('/api/logs', logRoutes); // Adicione a rota de logs
 
 // Middleware de Tratamento de Erros
-app.use(errorHandler); // Adicione o middleware de tratamento de erros
 
-// Conexão com o MongoDB
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-}).then(() => console.log('✅ Conectado ao MongoDB'))
-  .catch(err => console.error('❌ Erro ao conectar ao MongoDB:', err));
+const connectDB = require('./config/db');
+// Replace the mongoose.connect with:
+connectDB();
 
 // Configuração do WebSocket
 io.on('connection', (socket) => {
   console.log('🔌 Novo cliente conectado:', socket.id);
+
+app.use(errorHandler); // Adicione o middleware de tratamento de erros
+
+// Conexão com o MongoDB
+
+
+
 
   // Add handler for personal room joining
   socket.on('joinPersonalRoom', (userId) => {
@@ -59,6 +63,13 @@ io.on('connection', (socket) => {
       socket.emit('error', { message: 'Missing user ID' });
       return;
     }
+
+    // Add this after your other requires
+
+
+// Inside the io.on('connection', (socket) => {...}) function
+// Add this line:
+setupStatusHandlers(io, socket);
     
     // Create personal room ID with prefix for clarity
     const personalRoom = `user:${userId}`;

@@ -34,7 +34,7 @@
       padding: 20px;
       box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     }
-    
+
     /* Fix for avatar border white background issue - now with solid border instead of box-shadow */
     .avatar-border {
       margin-right: 10px; /* Keep existing margin */
@@ -45,24 +45,24 @@
       border: 3px solid rgba(var(--online-color), 1); /* Solid border instead of box-shadow */
       box-shadow: none; /* Remove any box-shadow */
     }
-    
+
     /* Border colors for different statuses */
     .avatar-border.online {
       border-color: rgba(var(--online-color), 1);
     }
-    
+
     .avatar-border.ausente {
       border-color: rgba(var(--ausente-color), 1);
     }
-    
+
     .avatar-border.ocupado {
       border-color: rgba(var(--ocupado-color), 1);
     }
-    
+
     .avatar-border.invisivel {
       border-color: rgba(var(--invisivel-color), 1);
     }
-    
+
     /* Override para o avatar para não ficar circular e forçar a forma quadrada */
     .user-header .avatar {
       border-radius: 8px; /* Altera de 50% para 8px */
@@ -109,77 +109,10 @@
       text-align: left; /* Ensure left alignment */
     }
 
-    .contacts-header {
-      display: flex;
-      justify-content: flex-start; /* left aligned */
-      margin-top: 20px;
-    }
-    .contacts-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .contacts-actions input {
-      width: 200px; /* Ajuste de largura conforme necessário */
-    }
-    .contacts-actions button {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 18px; /* Ajuste o tamanho do ícone conforme necessário */
-      color: var(--primary-color);
-    }
-    .search-wrapper {
-      position: relative;
-      display: inline-block;
-    }
-    .add-contact-icon {
-      cursor: pointer;
-      font-size: 18px;
-      color: var(--primary-color);
-      z-index: 1;
-    }
-    #contact-search {
-      padding-right: 30px; /* Add right padding to avoid overlap with icon */
-      width: 200px;
-    }
-    /* Estilos para a lista de contatos */
-    #contact-lissst {
-      list-style: none;
-      padding: 0;
-      margin: 20px 0 0 0;
-    }
-    .contact-item {
-      padding: 10px;
-      border-bottom: 1px solid #ddd;
-      cursor: pointer;
-    }
-    .contact-item:hover {
-      background-color: #e0e0e0;
-    }
-    
-    /* Styles for editable bio */
-    .bio-container {
-      position: relative;
-      display: flex;
-      align-items: center;
-      padding: 1px 0; /* Remove horizontal padding */
-      border-radius: 4px;
-      transition: background-color 0.2s;
-      width: 100%; /* Ensure full width */
-    }
-    
-    #user-bio {
-      margin: 0; /* Reset any default margins */
-      padding: 0; /* Reset any default padding */
-      width: 100%; /* Take full width of container */
-      text-align: left; /* Ensure left alignment */
-    }
-    
     .bio-container:hover {
       background-color: rgba(0, 0, 0, 0.04);
     }
-    
+
     .bio-edit-icon {
       cursor: pointer;
       opacity: 0;
@@ -188,15 +121,15 @@
       transition: opacity 0.2s;
       flex-shrink: 0; /* Prevent icon from shrinking */
     }
-    
+
     .bio-container:hover .bio-edit-icon {
       opacity: 0.7;
     }
-    
+
     .bio-edit-icon:hover {
       opacity: 1;
     }
-    
+
     #bio-edit-input {
       width: 100%;
       min-height: 24px;
@@ -208,7 +141,7 @@
       resize: none;
       outline: none;
     }
-    
+
     /* Styles for status dropdown */
     .status-container {
       position: relative;
@@ -216,29 +149,29 @@
       align-items: center;
       gap: 5px;
     }
-    
+
     .status-indicator {
       width: 10px;
       height: 10px;
       border-radius: 50%;
     }
-    
+
     .status-indicator.online {
       background-color: rgba(var(--online-color), 1);
     }
-    
+
     .status-indicator.ausente {
       background-color: rgba(var(--ausente-color), 1);
     }
-    
+
     .status-indicator.ocupado {
       background-color: rgba(var(--ocupado-color), 1);
     }
-    
+
     .status-indicator.invisivel {
       background-color: rgba(var(--invisivel-color), 1);
     }
-    
+
     .status-select {
       appearance: none;
       background: transparent;
@@ -250,11 +183,11 @@
       margin: 0;
       outline: none;
     }
-    
+
     .status-select:hover {
       text-decoration: underline;
     }
-    
+
     .status-select option {
       background-color: #f5f5f5;
       color: #333;
@@ -274,7 +207,7 @@
       box-shadow: none;
       border: none;
     }
-    
+
     /* Border background colors for different statuses */
     .avatar-border.online {
       background: linear-gradient(
@@ -283,7 +216,7 @@
         rgba(var(--online-color), 0.3) 100%
       );
     }
-    
+
     .avatar-border.ausente {
       background: linear-gradient(
         to top,
@@ -291,7 +224,7 @@
         rgba(var(--ausente-color), 0.3) 100%
       );
     }
-    
+
     .avatar-border.ocupado {
       background: linear-gradient(
         to top,
@@ -299,7 +232,7 @@
         rgba(var(--ocupado-color), 0.3) 100%
       );
     }
-    
+
     .avatar-border.invisivel {
       background: linear-gradient(
         to top,
@@ -307,7 +240,7 @@
         rgba(var(--invisivel-color), 0.3) 100%
       );
     }
-    
+
     /* Avatar image style */
     .user-header .avatar {
       display: block;
@@ -317,7 +250,7 @@
       object-fit: cover;
       background-color: white; /* Ensure the background is solid */
     }
-    
+
     /* Remove all other complex avatar border styles */
     .avatar-border::before {
       display: none;
@@ -329,7 +262,7 @@
       50% { background-color: rgba(var(--primary-color-rgb), 0.2); }
       100% { background-color: transparent; }
     }
-    
+
     .new-message {
       animation: notification-flash 1s ease-in-out;
     }
@@ -351,6 +284,7 @@
             <span class="bio-edit-icon" title="Edit bio">
               <i class="fas fa-pencil-alt"></i>
             </span>
+            
           </div>
           <div class="status-container">
             <div id="status-indicator" class="status-indicator online"></div>
@@ -363,6 +297,7 @@
           </div>
         </div>
       </div>
+      
       <div class="contacts-header" id="contacts-header">
         <div class="contacts-actions" style="display: flex; align-items: center; gap: 10px;">
           <div class="search-wrapper">
@@ -374,983 +309,16 @@
         </div>
       </div>
       <!-- Contact List Container -->
-      <ul id="contact-lissst">
-        <!-- Contatos serão inseridos aqui -->
-      </ul>
-    </div>
-  </div>
-  <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
-  <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
-  <script src="script.js"></script>
-  <script>
-    let currentUserId; // Inicialmente indefinida
-    let currentUserName; // Inicialmente indefinida
-
-    async function fetchUserInfo() {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:3000/api/users/me', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (!response.ok) throw new Error(`Error: ${response.status}`);
-        const user = await response.json();
-        currentUserId = user._id;
-        currentUserName = user.name || user.username;
-
-        // Set the user's name in the h2 with id "user-name"
-        document.getElementById('user-name').textContent = currentUserName;
-
-        // Update user bio if available
-        if (user.bio) {
-          document.getElementById('user-bio').textContent = user.bio;
-        }
-
-        // Update avatar with the one from database
-        if (user.avatar && user.avatar !== "/assets/avatar.png") {
-          // Use a complete URL by prepending the server address
-          const avatarUrl = `http://localhost:3000${user.avatar}`;
-          const userAvatar = document.getElementById('user-avatar');
-          // Set the image source and add an error handler in case the image can't be loaded
-          userAvatar.onerror = function() {
-            console.error("Failed to load avatar image from:", avatarUrl);
-            this.src = "../assets/avatar.png"; // Fallback to default
-            this.onerror = null; // Prevent infinite loop
-          };
-          userAvatar.src = `${avatarUrl}?t=${Date.now()}`; // Add timestamp to bust cache
-        }
-
-        console.log("User from DB (id igual ao token):", user);
-        return user; // Return user object for chaining
-      } catch (error) {
-        console.error("Erro ao buscar informações do usuário:", error);
-        return null;
-      }
-    }
-
-    // Replace the entire fetchContacts function with this corrected version
-    async function fetchContacts() {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          console.error("No authentication token found");
-          return;
-        }
-        
-        console.log("Fetching contacts from database...");
-        const response = await fetch('http://localhost:3000/api/contacts', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        
-        if (!response.ok) {
-          console.error(`Error fetching contacts: ${response.status}`);
-          return;
-        }
-        
-        const contacts = await response.json();
-        console.log("All contacts:", contacts);
-        console.log(`Total contacts found: ${contacts.length}`);
-        
-        // If no contacts found, log a message
-        if (contacts.length === 0) {
-          console.log("No contacts found. You may need to add some contacts first.");
-        } else {
-          // Log each contact with detailed information
-          contacts.forEach((contact, index) => {
-            console.log(`Contact ${index + 1}:`, {
-              id: contact._id,
-              userId: contact.userId,
-              contactId: contact.contactId,
-              createdAt: contact.createdAt
-            });
-          });
-        }
-        
-        // Display contacts in the UI
-        const contactList = document.getElementById('contact-lissst');
-        contactList.innerHTML = ''; // Clear existing contacts
-        
-        if (contacts.length === 0) {
-          const emptyMessage = document.createElement('li');
-          emptyMessage.textContent = "No contacts found";
-          emptyMessage.style.textAlign = 'center';
-          emptyMessage.style.padding = '20px';
-          contactList.appendChild(emptyMessage);
-        } else {
-          // Add CSS styles for contact list items
-          const styleElement = document.createElement('style');
-          styleElement.textContent = `
-            .contact-item {
-              padding: 10px;
-              border-bottom: 1px solid #ddd;
-              cursor: pointer;
-              display: flex;
-              align-items: center;
-              transition: background-color 0.2s;
-            }
-            
-            .contact-item:hover {
-              background-color: #e0e0e0;
-            }
-            
-            .contact-avatar {
-              width: 40px;
-              height: 40px;
-              border-radius: 8px;
-              margin-right: 12px;
-              object-fit: cover;
-              background-color: #ddd;
-            }
-            
-            .contact-name {
-              font-size: 15px;
-              flex-grow: 1;
-            }
-            
-            .contact-status {
-              width: 8px;
-              height: 8px;
-              border-radius: 50%;
-              margin-left: auto;
-              background-color: #ccc;
-            }
-            
-            .contact-status.online {
-              background-color: rgba(var(--online-color), 1);
-            }
-            
-            .contact-status.ausente {
-              background-color: rgba(var(--ausente-color), 1);
-            }
-            
-            .contact-status.ocupado {
-              background-color: rgba(var(--ocupado-color), 1);
-            }
-          `;
-          document.head.appendChild(styleElement);
-          
-          contacts.forEach(async (contact) => {
-            // Create list item for contact
-            const li = document.createElement('li');
-            li.classList.add('contact-item');
-            li.setAttribute('data-contact-id', contact.contactId); // Add attribute for easier finding this contact
-            
-            // Create and add avatar
-            const avatar = document.createElement('img');
-            avatar.classList.add('contact-avatar');
-            
-            // Debug the contact data 
-            console.log("Processing contact:", contact);
-            
-            // Get the contact's name for display
-            const displayName = contact.name || 'Unknown Contact';
-            
-            // Set up avatar with fallback to default avatar
-            if (contact.avatar) {
-              avatar.src = `http://localhost:3000${contact.avatar}`;
-            } else {
-              // Use generated avatar with initials
-              avatar.src = createDefaultAvatar(displayName);
-            }
-            
-            // Add error handler in case avatar fails to load
-            avatar.onerror = function() {
-              console.log(`Failed to load avatar for contact: ${displayName}`);
-              this.src = createDefaultAvatar(displayName);
-              this.onerror = null; // Prevent infinite loop
-            };
-            
-            // Create name element
-            const nameSpan = document.createElement('span');
-            nameSpan.classList.add('contact-name');
-            nameSpan.textContent = displayName;
-            
-            // Create status indicator
-            const statusIndicator = document.createElement('div');
-            statusIndicator.classList.add('contact-status');
-            
-            // Add status class if available
-            if (contact.status) {
-              statusIndicator.classList.add(contact.status);
-            } else {
-              statusIndicator.classList.add('online'); // Default status
-            }
-            
-            // Add all elements to the list item
-            li.appendChild(avatar);
-            li.appendChild(nameSpan);
-            li.appendChild(statusIndicator);
-            
-            // Add click listener
-            li.addEventListener('click', () => {
-              openChatWindow(contact);
-            });
-            
-            contactList.appendChild(li);
-
-            // Now fetch the actual user information for this contact
-            const contactUser = await getContactInfo(contact.contactId);
-            console.log("Retrieved contact user info:", contactUser);
-            
-            if (contactUser) {
-              // Update the contact name from the user object
-              nameSpan.textContent = contactUser.username || contactUser.name || `User ${contact.contactId.substr(-6)}`;
-              
-              // Update avatar if available
-              if (contactUser.avatar) {
-                avatar.src = `http://localhost:3000${contactUser.avatar}`;
-              } else {
-                avatar.src = createDefaultAvatar(contactUser.username || contactUser.name || "User");
-              }
-              
-              // Update in the contact object (for when clicking)
-              contact.name = contactUser.username || contactUser.name;
-              contact.avatar = contactUser.avatar;
-            } else {
-              // Use fallback values if user info not available
-              nameSpan.textContent = contact.name || `Contact ID: ${contact.contactId.substr(-6)}`;
-              avatar.src = createDefaultAvatar(nameSpan.textContent);
-            }
-          });
-        }
-        
-        return contacts;
-      } catch (error) {
-        console.error("Exception while fetching contacts:", error);
-        return [];
-      }
-    }
-    
-    // Add this helper function to create a default avatar with initials
-    function createDefaultAvatar(name) {
-      // Handle missing or invalid names better
-      if (!name || name === 'undefined' || name === 'User' || name.trim() === '') {
-        name = 'Contact';
-      }
-      
-      // Extract initials from name - handle different formats
-      let initials = '';
-      const nameParts = name.trim().split(/\s+/); // Split by any whitespace
-      
-      // Get first letter of first name
-      if (nameParts[0]) {
-        initials += nameParts[0].charAt(0).toUpperCase();
-      }
-      
-      // Get first letter of last name if available
-      if (nameParts.length > 1) {
-        const lastIndex = nameParts.length - 1;
-        initials += nameParts[lastIndex].charAt(0).toUpperCase();
-      }
-      
-      // If we still don't have initials, use first two letters of name or first letter
-      if (!initials && name.length > 0) {
-        initials = name.charAt(0).toUpperCase();
-        if (name.length > 1) {
-          initials += name.charAt(1).toLowerCase();
-        }
-      }
-      
-      // Create a canvas element
-      const canvas = document.createElement('canvas');
-      canvas.width = 40;
-      canvas.height = 40;
-      const ctx = canvas.getContext('2d');
-      
-      // Generate a color based on the name to ensure consistent colors for the same contact
-      const nameHash = name.split('').reduce((acc, char) => {
-        return acc + char.charCodeAt(0);
-      }, 0);
-      const hue = nameHash % 360;
-      
-      // Use a defined color palette for better aesthetics
-      const bgColor = `hsl(${hue}, 60%, 80%)`;
-      const textColor = `hsl(${hue}, 70%, 30%)`;
-      
-      // Fill background
-      ctx.fillStyle = bgColor;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
-      // Add subtle border
-      ctx.strokeStyle = `hsla(${hue}, 60%, 60%, 0.3)`;
-      ctx.lineWidth = 2;
-      ctx.strokeRect(2, 2, canvas.width - 4, canvas.height - 4);
-      
-      // Add initials
-      ctx.fillStyle = textColor;
-      ctx.font = 'bold 16px Arial, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(initials, canvas.width/2, canvas.height/2);
-      
-      return canvas.toDataURL('image/png');
-    }
-
-    // Enhanced fetchContacts function with better logging
-    async function fetchMessages(contactId) {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`http://localhost:3000/api/messages/${contactId}`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (!response.ok) throw new Error(`Error: ${response.status}`);
-        const messages = await response.json();
-        return messages;
-      } catch (error) {
-        console.error("Erro ao buscar mensagens:", error);
-        return [];
-      }
-    }
-
-    function getRoomId(userId1, userId2) {
-      // Always sort the IDs to ensure both users generate the same room ID
-      return [userId1, userId2].sort().join('_');
-    }
-
-    function openChatWindow(contact) {
-      // Use contact.contactId instead of contact._id - this is the actual user ID of the person
-      // If your contact model uses a different field name, adjust accordingly
-      const contactUserId = contact.contactId || contact.userId || contact._id;
-      console.log("Creating chat room between users:", currentUserId, "and", contactUserId);
-      
-      const roomId = getRoomId(currentUserId, contactUserId);
-      console.log("Generated room ID:", roomId);
-      
-      const chatWindow = window.open('', '_blank', 'width=400,height=500');
-      
-      const styleTag = chatWindow.document.createElement('style');
-      styleTag.textContent = `
-        .chat-window {
-          background-color: #fafafa;
-        }
-        .chat-window h2 {
-          margin: 0;
-          padding: 10px;
-          background-color: #f0f0f0;
-          border-bottom: 1px solid #ddd;
-        }
-        .message {
-          margin-bottom: 10px;
-        }
-        .message .sender {
-          font-weight: bold;
-        }
-        .message .text {
-          margin-left: 20px;
-        }
-      `;
-      chatWindow.document.head.appendChild(styleTag);
-      
-      chatWindow.document.body.style.margin = 0;
-      chatWindow.document.body.style.padding = 0;
-      chatWindow.document.body.style.display = 'flex';
-      chatWindow.document.body.style.flexDirection = 'column';
-      chatWindow.document.body.style.height = '100vh';
-      
-      const container = chatWindow.document.createElement('div');
-      container.classList.add('chat-window');
-      container.style.display = 'flex';
-      container.style.flexDirection = 'column';
-      container.style.height = '100%';
-      chatWindow.document.body.appendChild(container);
-      
-      const header = chatWindow.document.createElement('h2');
-      header.textContent = `Chat com ${contact.name}`;
-      header.style.margin = 0;
-      header.style.padding = '10px';
-      header.style.backgroundColor = '#f0f0f0';
-      header.style.borderBottom = '1px solid #ddd';
-      container.appendChild(header);
-      
-      const messagesDiv = chatWindow.document.createElement('div');
-      messagesDiv.id = 'messagesRoom';
-      messagesDiv.style.flex = 1;
-      messagesDiv.style.padding = '10px';
-      messagesDiv.style.overflowY = 'auto';
-      container.appendChild(messagesDiv);
-      
-      const input = chatWindow.document.createElement('input');
-      input.id = 'message-input';
-      input.placeholder = 'Digite uma mensagem...';
-      input.style.padding = '10px';
-      input.style.border = 'none';
-      input.style.borderTop = '1px solid #ddd';
-      input.style.width = 'calc(100% - 20px)';
-      input.style.margin = '0 10px';
-      input.addEventListener('keyup', function(e) {
-        if (e.key === 'Enter') {
-          sendMessage(roomId);
-        }
-      });
-      container.appendChild(input);
-      
-      const button = chatWindow.document.createElement('button');
-      button.textContent = 'Enviar';
-      button.style.padding = '10px';
-      button.style.border = 'none';
-      button.style.backgroundColor = 'var(--primary-color)';
-      button.style.color = '#fff';
-      button.style.cursor = 'pointer';
-      button.onclick = function() {
-        sendMessage(roomId);
-      };
-      container.appendChild(button);
-      
-      const socket = io('http://localhost:3000');
-      socket.emit('joinRoom', roomId);
-      
-      socket.on('receiveMessage', (message) => {
-        console.log("Real-time message received:", message);
-        
-        // Only add visual notification if the message is from someone else and window is not focused
-        if (message.sender !== currentUserId) {
-          // REMOVED sound notification from here
-          // Only add visual notification
-          if (!chatWindow.document.hasFocus()) {
-            header.classList.add('new-message');
-            // Remove the class after animation completes
-            setTimeout(() => {
-              header.classList.remove('new-message');
-            }, 1000);
-          }
-        }
-        
-        displayMessage(message, messagesDiv);
-      });
-      
-      function sendMessage(rId) {
-        const messageInput = chatWindow.document.getElementById('message-input');
-        const messageText = messageInput.value.trim();
-        if (!messageText) return;
-        if (!currentUserName) {
-          console.error("currentUserName is undefined");
-          return;
-        }
-        
-        socket.emit('sendMessage', {
-          room: rId,
-          text: messageText,
-          sender: currentUserId,
-          recipient: contactUserId // Use the correct user ID here too
-        });
-        messageInput.value = '';
-      }
-      
-      fetchMessages(contactUserId).then(messages => {
-        messages.forEach(message => {
-          displayMessage(message, messagesDiv);
-        });
-      });
-    }
-
-    function displayMessage(message, container) {
-      const messageDiv = document.createElement('div');
-      messageDiv.classList.add('message');
-      
-      const senderDiv = document.createElement('div');
-      senderDiv.classList.add('sender');
-      senderDiv.textContent = `${message.senderName} diz:`; // Use senderName from MongoDB
-      
-      const textDiv = document.createElement('div');
-      textDiv.classList.add('text');
-      textDiv.textContent = `• ${message.text}`;
-      
-      messageDiv.appendChild(senderDiv);
-      messageDiv.appendChild(textDiv);
-      container.appendChild(messageDiv);
-      
-      // Scroll to the bottom after appending
-      container.scrollTop = container.scrollHeight;
-    }
-
-    // Add click listener to open the addContact window
-    document.querySelector('.add-contact-icon').addEventListener('click', () => {
-      window.open('addContact.html', '_blank', 'width=400,height=300');
-    });
-    
-    // Add a utility function to see all users from the console
-    async function viewAllUsers() {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) return console.error("No token found");
-        
-        const response = await fetch('http://localhost:3000/api/users/all', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        
-        if (!response.ok) return console.error("Error fetching users:", response.status);
-        
-        const users = await response.json();
-        console.log("All users in database:", users);
-        return users;
-      } catch (error) {
-        console.error("Exception fetching users:", error);
-        return null;
-      }
-    }
-    
-    // Add this to global window object so you can call it from browser console
-    window.viewAllUsers = viewAllUsers;
-    
-    // Add avatar upload functionality
-    function setupAvatarUpload() {
-      const avatarContainer = document.getElementById('avatar-container');
-      const fileInput = document.getElementById('avatar-upload');
-      const userAvatar = document.getElementById('user-avatar');
-      
-      // Add tooltip to show it's clickable
-      avatarContainer.title = "Click to change your avatar";
-      
-      // Make the avatar container look clickable
-      avatarContainer.style.cursor = 'pointer';
-      
-      // Click on avatar container triggers file selection
-      avatarContainer.addEventListener('click', () => {
-        fileInput.click();
-      });
-      
-      // When a file is selected
-      fileInput.addEventListener('change', async () => {
-        const file = fileInput.files[0];
-        if (!file) return;
-        
-        // Validate file type
-        const validTypes = ['image/jpeg', 'image/png'];
-        if (!validTypes.includes(file.type)) {
-          alert('Please select a JPEG or PNG image');
-          return;
-        }
-        
-        // Create loading indicator
-        avatarContainer.classList.add('loading');
-        
-        // Prepare form data
-        const formData = new FormData();
-        formData.append('avatar', file);
-        
-        try {
-          const token = localStorage.getItem('token');
-          const response = await fetch('http://localhost:3000/api/users/avatar', {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${token}`
-            },
-            body: formData
-          });
-          
-          if (!response.ok) {
-            throw new Error(`Upload failed: ${response.statusText}`);
-          }
-          
-          const data = await response.json();
-          
-          // Update avatar with new one
-          // Using Date.now() to break the browser cache
-          userAvatar.src = `${data.avatarUrl}?t=${Date.now()}`;
-          
-          // Display success feedback
-          alert('Avatar updated successfully!');
-        } catch (error) {
-          console.error('Error uploading avatar:', error);
-          alert('Failed to upload avatar. Please try again.');
-        } finally {
-          // Remove loading state
-          avatarContainer.classList.remove('loading');
-        }
-      });
-    }
-
-    // Updated bio editing functionality
-    function setupBioEditing() {
-      const bioContainer = document.querySelector('.bio-container');
-      const bioText = document.getElementById('user-bio');
-      const bioEditIcon = document.querySelector('.bio-edit-icon');
-      let originalBio = bioText.textContent;
-      
-      // When edit icon is clicked, replace text with editable input  
-      bioEditIcon.addEventListener('click', () => {
-        originalBio = bioText.textContent; // Store current text
-        
-        // Hide text and icon
-        bioText.style.display = 'none';
-        bioEditIcon.style.display = 'none';
-        
-        // Create input element
-        const textArea = document.createElement('textarea');
-        textArea.id = 'bio-edit-input';
-        textArea.value = originalBio;
-        bioContainer.appendChild(textArea);
-        textArea.focus();
-        
-        // Auto-resize textarea to fit content
-        textArea.style.height = 'auto';
-        textArea.style.height = textArea.scrollHeight + 'px';
-        
-        // Handle Enter key (save) and Escape key (cancel)
-        textArea.addEventListener('keydown', async (e) => {
-          if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            await saveBio(textArea.value);
-          } else if (e.key === 'Escape') {
-            cancelEdit();
-          }
-        });
-        
-        // Handle blur (clicking outside)
-        textArea.addEventListener('blur', async () => {
-          const newBio = textArea.value.trim();
-          
-          // Only save if content changed 
-          if (newBio !== originalBio) {
-            await saveBio(newBio);
-          } else {
-            cancelEdit();
-          }
-        });
-        
-        // When user types, auto-resize the textarea
-        textArea.addEventListener('input', () => {
-          textArea.style.height = 'auto';
-          textArea.style.height = textArea.scrollHeight + 'px';
-        });
-      });
-      
-      async function saveBio(newBio) {
-        try {
-          const token = localStorage.getItem('token');
-          const response = await fetch('http://localhost:3000/api/users/bio', {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ bio: newBio })
-          });
-          
-          if (!response.ok) {
-            throw new Error('Failed to update bio');
-          }
-          
-          // Update UI with new bio
-          bioText.textContent = newBio;
-          completeEdit();
-        } catch (error) {
-          console.error('Error updating bio:', error);
-          // Revert to original if save failed
-          bioText.textContent = originalBio;
-          completeEdit();
-        }
-      }
-      
-      function cancelEdit() {
-        // Revert to original state
-        completeEdit();
-      }
-      
-      function completeEdit() {
-        // Remove textarea
-        const textArea = document.getElementById('bio-edit-input');
-        if (textArea) {
-          textArea.remove();
-        }
-        
-        // Show text and edit icon again
-        bioText.style.display = 'block';
-        bioEditIcon.style.display = 'inline';
-      }
-    }
-    
-    // Add status changing functionality
-    function setupStatusSelector() {
-      const statusSelect = document.getElementById('user-status');
-      const statusIndicator = document.getElementById('status-indicator');
-      const avatarBorder = document.getElementById('avatar-container');
-      
-      // Initialize status from user data or localStorage
-      const savedStatus = localStorage.getItem('userStatus') || 'online';
-      statusSelect.value = savedStatus;
-      updateStatusVisuals(savedStatus);
-      
-      // Handle status changes
-      statusSelect.addEventListener('change', async function() {
-        const newStatus = this.value;
-        updateStatusVisuals(newStatus);
-        
-        // Log sound notification status based on new status
-        if (newStatus === 'ocupado') {
-          console.log("%c Sound notifications disabled - status: ocupado", "color: orange");
-        } else {
-          console.log("%c Sound notifications enabled", "color: green");
-        }
-        
-        // Save to localStorage
-        localStorage.setItem('userStatus', newStatus);
-        
-        // Optionally save to backend
-        try {
-          const token = localStorage.getItem('token');
-          const response = await fetch('http://localhost:3000/api/users/status', {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ status: newStatus })
-          });
-          
-          if (!response.ok) {
-            console.error('Failed to save status to server');
-          }
-        } catch (error) {
-          console.error('Error saving status:', error);
-        }
-      });
-      
-      function updateStatusVisuals(status) {
-        // Update the indicator color
-        statusIndicator.className = 'status-indicator ' + status;
-        
-        // Update avatar border color
-        avatarBorder.className = 'avatar-border ' + status;
-      }
-    }
-
-    // Create audio objects for notifications
-    const messageSound = new Audio('audio/message.mp3'); // Path to your sound file in public/audio directory
-    
-    // Function to play notification sound
-    function playNotificationSound(message) {
-      // Get current user status
-      const userStatus = document.getElementById('user-status').value;
-      
-      // Only mute sound if user is in "ocupado" (busy) status
-      if (userStatus === 'ocupado') {
-        console.log(`🔇 Sound muted: user is in "ocupado" status`);
-        return;
-      }
-      
-      console.log(`🔊 Playing notification sound for message from ${message.senderName || 'Unknown'}`);
-      
-      // Clone the audio to allow multiple sounds to play simultaneously
-      const soundClone = messageSound.cloneNode();
-      
-      // Try to play the sound
-      const promise = soundClone.play();
-      
-      if (promise !== undefined) {
-        promise.catch(error => {
-          console.log('Audio playback was not allowed:', error);
-        });
-      }
-    }
-    
-    // Call the setup functions after fetching user info
-    fetchUserInfo()
-      .then((user) => {
-        if (user && currentUserId) {
-          console.log("%c User authenticated:", "color: green", {
-            id: currentUserId,
-            name: currentUserName
-          });
-          
-          // Set up socket connection first thing after user authentication
-          return setupSocketConnection();
-        }
-      })
-      .then((socketConnected) => {
-        // Continue with other initializations
-        setupAvatarUpload();
-        setupBioEditing();
-        setupStatusSelector();
-        
-        // Log socket setup status
-        if (socketConnected) {
-          console.log("%c Socket setup complete", "color: green");
-        } else {
-          console.warn("%c Socket setup failed or was not completed", "color: orange");
-        }
-        
-        return fetchContacts();
-      })
-      .catch((error) => {
-        console.error("Error during initialization:", error);
-      });
-    
-    // Add this after the fetchUserInfo function to set up socket connection and join personal room
-    async function setupSocketConnection() {
-      try {
-        // Ensure we have the user ID first
-        if (!currentUserId) {
-          console.error("Cannot set up socket connection: No user ID available");
-          return;
-        }
-        
-        console.log("%c Setting up socket connection for user", "color: blue; font-weight: bold", currentUserId);
-        
-        // Initialize Socket.io connection
-        if (!window.socket) {
-          window.socket = io('http://localhost:3000');
-          
-          // Handle connect event - moved to top of function
-          window.socket.on('connect', () => {
-            console.log("%c Socket connected with ID:", "color: green", window.socket.id);
-            
-            // Join personal room using user's own ID - immediately after connection
-            const personalRoom = `user:${currentUserId}`;
-            console.log("%c Joining personal room:", "color: purple; font-weight: bold", personalRoom);
-            
-            window.socket.emit('joinPersonalRoom', currentUserId);
-            
-            // Initialize sound system right after joining room
-            setupSoundSystem();
-          });
-          
-          // Move event handlers setup here - before room verification
-          setupSocketEventHandlers();
-        }
-        
-        return true;
-      } catch (error) {
-        console.error("Error setting up socket connection:", error);
-        return false;
-      }
-    }
-    
-    // Separate function to set up socket event handlers
-    function setupSocketEventHandlers() {
-      if (!window.socket) return;
-      
-      // Handle successful room join
-      window.socket.on('roomJoined', (data) => {
-        console.log("%c Successfully joined room:", "color: green; font-weight: bold", data);
-        
-        // Sound system is ready after room join confirmation
-        console.log("%c Sound notification system is active", "color: green");
-      });
-      
-      // Handle errors
-      window.socket.on('error', (error) => {
-        console.error("Socket error:", error);
-      });
-      
-      // Handle socket disconnection
-      window.socket.on('disconnect', () => {
-        console.log("%c Socket disconnected", "color: orange");
-      });
-      
-      // Handle personal messages (notifications)
-      window.socket.on('personalMessage', (message) => {
-        console.log("%c Personal message received in personal room:", "color: blue; font-weight: bold", message);
-        
-        // Play notification sound
-        playNotificationSound(message);
-        
-        // Rest of personal message handling code...
-        // Show desktop notifications
-        if (Notification.permission === "granted") {
-          const notification = new Notification("New Message", {
-            body: `${message.senderName}: ${message.text}`,
-            icon: "../assets/avatar.png"
-          });
-          
-          notification.onclick = () => {
-            window.focus();
-            // Open chat with sender if possible
-            const senderContact = document.querySelector(`.contact-item[data-contact-id="${message.sender}"]`);
-            if (senderContact) {
-              senderContact.click();
-            }
-          };
-        }
-        
-        // If ContactManager exists, notify it
-        if (window.ContactManager && typeof window.ContactManager.highlightContact === 'function') {
-          window.ContactManager.highlightContact(message.sender);
-        }
-      });
-    }
-    
-    // Setup sound system specifically
-    function setupSoundSystem() {
-      // Ensure message sound is loaded
-      messageSound.addEventListener('canplaythrough', () => {
-        console.log("%c Sound file loaded successfully", "color: green");
-      });
-      messageSound.load();
-    }
-    
-    // Add a function to verify if the user is in their personal room
-    function verifyPersonalRoom() {
-      if (!window.socket || !currentUserId) {
-        console.error("Cannot verify personal room: Socket or user ID not available");
-        return;
-      }
-      
-      console.log("%c Verifying personal room membership for user:", "color: orange", currentUserId);
-      window.socket.emit('verifyRoom', currentUserId);
-      
-      window.socket.once('roomVerification', (data) => {
-        console.log("%c Room verification result:", "color: orange", data);
-        
-        if (!data.inRoom) {
-          console.warn("%c User is not in personal room, rejoining...", "color: orange");
-          window.socket.emit('joinPersonalRoom', currentUserId);
-        } else {
-          console.log("%c User is in personal room", "color: green");
-        }
-      });
-    }
-    
-    // Make it available globally for debugging
-    window.verifyPersonalRoom = verifyPersonalRoom;
-    
-    // Check personal room membership after 5 seconds (to allow other initialization to complete)
-    setTimeout(() => {
-      if (currentUserId) {
-        verifyPersonalRoom();
-      }
-    }, 5000);
-    
-    // Add a utility function to fetch user details by ID
-    async function fetchUserDetails(userId) {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`http://localhost:3000/api/users/${userId}`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        
-        if (!response.ok) {
-          throw new Error(`Failed to fetch user: ${response.status}`);
-        }
-        
-        return await response.json();
-      } catch (error) {
-        console.error(`Error fetching user ${userId}:`, error);
-        return null;
-      }
-    }
-
-    // Make the function available globally for debugging
-    window.fetchUserDetails = fetchUserDetails;
-
-    // Add this utility function to get user info for contacts
-    async function getContactInfo(contactId) {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`http://localhost:3000/api/users/${contactId}`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        
-        if (!response.ok) {
-          console.warn(`Could not fetch info for contact ID: ${contactId}`);
-          return null;
-        }
-        
-        return await response.json();
-      } catch (error) {
-        console.error(`Error fetching contact info for ID: ${contactId}`, error);
-        return null;
-      }
-    }
-  </script>
-</body>
-</html>
+      <ul id="contact-list">
+        <!-- Check and fix the script tag order and paths -->
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
+<script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+<!-- Remove this if it's causing conflicts -->
+<script src="script.js"></script>
+<!-- Add correct paths to your module scripts -->
+<script src="js/socket.js"></script>
+<script src="js/status.js"></script>
+<script src="js/contacts.js"></script>
+<script src="js/messages.js"></script>
+<script src="js/profile.js"></script>
+<script src="js/app.js"></script>
